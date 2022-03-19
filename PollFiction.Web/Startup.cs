@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PollFiction.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +25,17 @@ namespace PollFiction.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //déclration du service Dbcontext pour rendre accessible de partout
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                string cn = Configuration.GetConnectionString("cn");
+                options.UseSqlServer(cn)
+#if DEBUG
+                .EnableSensitiveDataLogging()
+#endif
+                ;
+            });
+
             services.AddControllersWithViews();
         }
 
