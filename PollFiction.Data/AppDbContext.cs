@@ -23,13 +23,13 @@ namespace PollFiction.Data
                         .HasMany<Poll>(g => g.Polls)
                         .WithOne(s => s.User)
                         .HasForeignKey(s => s.UserId)
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Poll>()
                         .HasMany<Choice>(g => g.Choices)
                         .WithOne(s => s.Poll)
                         .HasForeignKey(s => s.PollId)
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PollGuest>().HasKey(sc => new { sc.PollId, sc.GuestId });
 
@@ -37,14 +37,14 @@ namespace PollFiction.Data
                         .HasOne<Poll>(sc => sc.Poll)
                         .WithMany(s => s.PollGuests)
                         .HasForeignKey(sc => sc.PollId)
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<PollGuest>()
                         .HasOne<Guest>(sc => sc.Guest)
                         .WithMany(s => s.PollGuests)
                         .HasForeignKey(sc => sc.GuestId)
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<GuestChoice>().HasKey(sc => new { sc.ChoiceId, sc.GuestId });
 
@@ -52,14 +52,14 @@ namespace PollFiction.Data
                         .HasOne<Choice>(sc => sc.Choice)
                         .WithMany(s => s.GuestChoices)
                         .HasForeignKey(sc => sc.ChoiceId)
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<GuestChoice>()
                         .HasOne<Guest>(sc => sc.Guest)
                         .WithMany(s => s.GuestChoices)
                         .HasForeignKey(sc => sc.GuestId)
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
