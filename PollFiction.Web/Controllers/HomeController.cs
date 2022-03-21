@@ -23,6 +23,17 @@ namespace PollFiction.Web.Controllers
             return View();
         }
 
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(RegisterViewModel model)
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

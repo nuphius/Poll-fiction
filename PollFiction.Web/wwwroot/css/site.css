@@ -1,10 +1,42 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+/* Début CSS personnalisé de PollFiction !!!!!!*/
+.index-titre-center {
+    margin-top:35vh; 
+    transform: translateY(-35%);
+}
+
+.index-h1 {
+    font-size: 50px;
+    font-weight: bold;
+    margin-bottom:40px;
+}
+
+.index-lien a{
+    display:inline-block;
+    border: 1px solid black;
+    padding:15px 40px;
+    border-radius: 10px;
+    text-decoration : none;
+    color:black;
+    background-color:cornflowerblue;
+    font-weight:bold;
+}
+.index-lien a:first-child {
+    margin-right:100px;
+}
+
+.index-lien a:hover {
+    background-color:lightskyblue;
+}
+
+
+/* Fin CSS personnalisé de PollFiction !!!!!!*/
 a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
 }
 
 /* Provide sufficient contrast against white background */
