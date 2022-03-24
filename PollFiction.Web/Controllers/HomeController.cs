@@ -29,7 +29,9 @@ namespace PollFiction.Web.Controllers
 
         public IActionResult Register()
         {
-            return View();
+            RegisterViewModel model = new RegisterViewModel();
+            model.Error = "";
+            return View(model);
         }
 
         [HttpPost]
@@ -39,13 +41,18 @@ namespace PollFiction.Web.Controllers
 
             if (String.IsNullOrEmpty(rst))
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Login));
             }
             else
             {
                 model.Error = rst;
                 return View(model);
             } 
+        }
+
+        public IActionResult Login()
+        {
+            return View();
         }
 
         public IActionResult Privacy()
