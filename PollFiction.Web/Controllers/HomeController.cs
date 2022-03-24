@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PollFiction.Services.Interfaces;
+using PollFiction.Services.Models;
 using PollFiction.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -12,10 +14,12 @@ namespace PollFiction.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserService _userService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IUserService userService)
         {
             _logger = logger;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -29,9 +33,19 @@ namespace PollFiction.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            return View();
+            string rst = await _userService.RegisterUserAsync(model);
+
+            if (String.IsNullOrEmpty(rst))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                model.Error = rst;
+                return View(model);
+            } 
         }
 
         public IActionResult Privacy()

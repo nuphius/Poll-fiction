@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PollFiction.Data;
+using PollFiction.Services;
+using PollFiction.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +37,8 @@ namespace PollFiction.Web
 #endif
                 ;
             });
+
+            services.AddScoped<IUserService, UserService>();
 
             services.AddControllersWithViews();
         }

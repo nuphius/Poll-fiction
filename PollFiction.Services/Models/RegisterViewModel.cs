@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PollFiction.Web.Models
+namespace PollFiction.Services.Models
 {
     public class RegisterViewModel
     {
@@ -24,5 +24,6 @@ namespace PollFiction.Web.Models
         [Display (Name ="Confirmation du mot de passe")]
         [DataType (DataType.Password)]
         public string ConfirmPwd { get; set; }
+        public string Error { get; set; }
     }
 }
