@@ -12,5 +12,8 @@ namespace PollFiction.Web.Models
         [Display(Name ="Mot de passe")]
         [RegularExpression("^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$", ErrorMessage = "Minimum 8 caractères avec minuscules, majuscules et chiffres obligatoires")]
         public string Password { get; set; }
+        public string ReturnUrl { get; set; }
+        [Display(Name = "Garder la session ouverte")]
+        public bool RememberMe { get; set; }
     }
 }
