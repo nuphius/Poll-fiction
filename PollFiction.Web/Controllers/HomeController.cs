@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PollFiction.Services.Interfaces;
 using PollFiction.Services.Models;
@@ -49,8 +50,46 @@ namespace PollFiction.Web.Controllers
                 return View(model);
             } 
         }
+        [HttpGet]
+        public IActionResult Login(string returnUrl)
+        {
+            LoginViewModel model = new LoginViewModel();
+            model.ReturnUrl = returnUrl;
 
-        public IActionResult Login()
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            bool login = await _userService.ConnectUserAsync(model.Pseudo, model.Password, model.RememberMe);
+
+            if (login)
+            {
+                if (!string.IsNullOrEmpty(model.ReturnUrl))
+                {
+                    return Redirect(model.ReturnUrl);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _userService.DisconnectAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize]
+        public IActionResult Dashboard()
         {
             return View();
         }

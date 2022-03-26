@@ -38,7 +38,23 @@ namespace PollFiction.Web
                 ;
             });
 
+            services.AddAuthentication("Cookies2")
+               .AddCookie("Cookies2", options =>
+               {
+                   options.LogoutPath = "/home/index";
+                   options.LoginPath = "/home/login";
+                   options.AccessDeniedPath = "/home/accesDenied";
+                   options.ReturnUrlParameter = "returnUrl";
+                   options.ExpireTimeSpan = TimeSpan.FromDays(1);
+
+                   //config du cookie
+                   options.Cookie.HttpOnly = true;
+                   options.Cookie.IsEssential = true;
+               });
+
             services.AddScoped<IUserService, UserService>();
+
+            services.AddHttpContextAccessor();
 
             services.AddControllersWithViews();
         }

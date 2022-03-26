@@ -10,5 +10,9 @@ namespace PollFiction.Services.Interfaces
     public interface IUserService
     {
         Task<string> RegisterUserAsync(RegisterViewModel user);
+
+        Task<bool> ConnectUserAsync(string pseudo, string password, bool RemenberMe);
+
+        Task DisconnectAsync();
     }
 }
