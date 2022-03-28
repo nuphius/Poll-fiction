@@ -41,7 +41,7 @@ h1{
 }
 
 .container-form {
-    padding: 20px;
+    padding: 10px;
     margin: 20px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     border-radius: 10px;
@@ -50,7 +50,19 @@ h1{
 .container-form form {
     display:block;
     margin:auto;
-    max-width : 50%;
+    max-width : 60%;
+}
+.searchPoll {
+    display:inline-block;
+    vertical-align:middle;
+    width: 100%;
+    max-width: 350px;
+    padding: .375rem .75rem;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
 }
 
 /* Fin CSS personnalisé de PollFiction !!!!!!*/

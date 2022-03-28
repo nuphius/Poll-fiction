@@ -38,8 +38,8 @@ namespace PollFiction.Web
                 ;
             });
 
-            services.AddAuthentication("Cookies2")
-               .AddCookie("Cookies2", options =>
+            services.AddAuthentication("Cookies")
+               .AddCookie("Cookies", options =>
                {
                    options.LogoutPath = "/home/index";
                    options.LoginPath = "/home/login";
@@ -53,6 +53,7 @@ namespace PollFiction.Web
                });
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPollService, PollService>();
 
             services.AddHttpContextAccessor();
 
@@ -77,6 +78,9 @@ namespace PollFiction.Web
 
             app.UseRouting();
 
+            //ajoujt de l'étape d'authentification dans le Pipeline
+            //L'ORDRE COMPTE !!!!
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

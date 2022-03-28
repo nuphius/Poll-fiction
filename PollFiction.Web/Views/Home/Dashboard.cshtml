@@ -1,4 +1,21 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-<h1>login !!!!!!!</h1>
+﻿@model PollFiction.Data.Model.User
+@{
+    ViewData["Title"] = "Tableau de bord de " + @Model.UserPseudo;
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+
+<h1>Tableau de bord</h1>
+
+<hr />
+<div class="container">
+    <div class="container-form">
+        <form action="CodePoll" method="post">
+            <div>
+                <input type="text" class="searchPoll" placeholder="Saisiez un code de sondage" />
+                <input type="submit" value="Rechercher" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@Html.ActionLink("Déconnecter", "Logout", "Home")

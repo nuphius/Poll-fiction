@@ -60,12 +60,13 @@ namespace PollFiction.Services
                 };
 
                 //générer avec les claims un objet claimIdentity
-                var identity = new ClaimsIdentity(claims, "Cookies2");
+                var identity = new ClaimsIdentity(claims, "Cookies");
                 //utiliser ce claimsidenty pour faire un claimPrincipal
                 ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
                 //connecter avec le claimsprincipal
                 await _httpContext.SignInAsync(principal, new AuthenticationProperties { IsPersistent = rememberMe });
+                //var a = _httpContext.User.Claims.ToList();
                 return true;
             }
 

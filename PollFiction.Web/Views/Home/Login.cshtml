@@ -35,6 +35,15 @@
             <div class="form-group">
                 <input type="submit" value="Identifier" class="btn btn-primary" />
             </div>
+
+            @if(!string.IsNullOrEmpty(@Model.Error))
+            {
+                <div class="error">
+                    <p>
+                        @Model.Error
+                    </p>
+                </div>
+            }
         </form>
     </div>
 </div>

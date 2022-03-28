@@ -16,11 +16,13 @@ namespace PollFiction.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUserService _userService;
+        private readonly IPollService _pollService;
 
-        public HomeController(ILogger<HomeController> logger, IUserService userService)
+        public HomeController(ILogger<HomeController> logger, IUserService userService, IPollService pollService)
         {
             _logger = logger;
             _userService = userService;
+            _pollService = pollService;
         }
 
         public IActionResult Index()
@@ -66,6 +68,7 @@ namespace PollFiction.Web.Controllers
 
             if (login)
             {
+                model.Error = "";
                 if (!string.IsNullOrEmpty(model.ReturnUrl))
                 {
                     return Redirect(model.ReturnUrl);
@@ -77,6 +80,7 @@ namespace PollFiction.Web.Controllers
             }
             else
             {
+                model.Error = "Login ou mot de passe incorrect !";
                 return View(model);
             }
         }
@@ -90,6 +94,14 @@ namespace PollFiction.Web.Controllers
 
         [Authorize]
         public IActionResult Dashboard()
+        {
+            var model = _pollService.LoadDashboardAsync();
+
+            return View(model);
+        }
+
+        [Authorize]
+        public IActionResult CreatePoll()
         {
             return View();
         }
