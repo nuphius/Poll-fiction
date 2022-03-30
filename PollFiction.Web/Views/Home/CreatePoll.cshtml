@@ -11,7 +11,7 @@
         <form asp-action="CreatePoll" id="CreatePoll">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" class="form-check-input" asp-for="Multiple" id="customSwitch1" />
+                <input type="checkbox" class="custom-control-input" asp-for="Multiple" id="customSwitch1" />
                 <label class="custom-control-label" for="customSwitch1">
                     @Html.DisplayNameFor(model => model.Multiple)
                 </label>
@@ -32,18 +32,18 @@
             <div class="form-group">
                 <input type="submit" value="Créer" class="btn btn-primary" />
             </div>
+            <hr>
             <div>
-                <h5>Liste des questions :</h5>
-                <ul id="ListChoice">
-                </ul>
-            </div>
-
-            <div>
-                <input type="text" class="form-control" placeholder="Saisiez des choix" id="Choice" />
-                <br />
-                <input type="button" value="Ajouter" class="btn btn-primary" onclick="AddChoice()" />
+                <input type="text" class="searchPoll" placeholder="Saisiez des choix" id="Choice" />
+                <input type="button" value="Ajouter un choix" class="btn btn-primary" onclick="AddChoice()" />
             </div>
         </form>
+
+        <div>
+            <h5>Liste des choix :</h5>
+            <ul id="ListChoice">
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -57,46 +57,66 @@
     await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        var count = 1;
+            let count = 1;
 
-        function AddChoice () {
+           function DelChoice(nbr) {
 
-            var choice = document.getElementById('Choice').value;
+               let form = document.getElementById("CreatePoll");
+               let inputToDelete = document.getElementById("inputChoice"+nbr);
+               form.removeChild(inputToDelete);
 
-            if(choice != ""){
+               let list = document.getElementById('ListChoice');
+               list.removeChild(document.getElementById("liChoice"+nbr));
+           }
 
-                var list = document.getElementById('ListChoice');
-                var entry = document.createElement('li');
-                entry.id = "liChoice"+count;
+            function AddChoice () {
 
-                var input = document.createElement("input");
-                input.setAttribute("type", "hidden");
-                input.setAttribute("name", "Choices");
-                input.setAttribute("value", choice);
-                input.id = "inputChoice"+count;
+                let choice = document.getElementById('Choice').value;
 
-                var image = document.createElement("img");
+                if(choice != ""){
 
-                image.src = "~/images/delete48.png";
-                image.alt = "Supprimer";
-                image.setAttribute("onclick", "DelChoice("+count+")")
+                    //recupére la balise ul et crée la li
+                    let list = document.getElementById('ListChoice');
+                    let entry = document.createElement('li');
+                    entry.id = "liChoice"+count;
 
+                    //ajout dans d'un li dans la balise ul
+                    list.appendChild(entry);
 
-                entry.appendChild(document.createTextNode(choice));
-                entry.appendChild(image);
+                    //Création balise span
+                    let span = document.createElement("span");
+                    span.innerHTML =  '  -  '+choice;
+                    //entry.appendChild(span);
 
+                    //Création balise INPUT
+                    let input = document.createElement("input");
+                    input.setAttribute("type", "hidden");
+                    input.setAttribute("name", "Choices");
+                    input.setAttribute("value", choice);
+                    input.id = "inputChoice"+count;
 
-                document.getElementById("CreatePoll").appendChild(input);
-                list.appendChild(entry);
+                    //ajout au depuis la balise form
+                    document.getElementById("CreatePoll").appendChild(input);
 
-                document.getElementById('Choice').value = '';
+                    //Création balise IMG
+                    let image = document.createElement("img");
+                    image.id="ImgChoice"+count;
+                    image.src = "../images/delete48.png";
+                    image.alt = "Supprimer";
+                    image.className = "imgDel";
+                    image.setAttribute("onclick", "DelChoice("+count+")");
 
-                count++;
+                    entry.appendChild(image);
+                    //entry = document.getElementById("liChoice"+count);
+                    entry.appendChild(span);
+                    //entry.appendChild(document.createTextNode(choice));
+                    
+
+                    //Effacement du contenu du champ saisie
+                    document.getElementById('Choice').value = '';
+
+                    count++;
+                }
             }
-
-            function DelChoice(nb) {
-                return alert("dsfsfsf");
-            }
-        }
     </script>
 }

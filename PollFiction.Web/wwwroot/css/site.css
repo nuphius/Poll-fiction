@@ -55,14 +55,28 @@ h1{
 .searchPoll {
     display:inline-block;
     vertical-align:middle;
-    width: 100%;
-    max-width: 350px;
+    width: 75%;
     padding: .375rem .75rem;
     color: #495057;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
+}
+
+#ListChoice {
+    margin-left: 40px;
+}
+
+    #ListChoice li {
+        list-style-type: none;
+        width: 70%;
+    }
+
+.imgDel {
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
 }
 
 /* Fin CSS personnalisé de PollFiction !!!!!!*/
@@ -119,8 +133,8 @@ button.accept-policy {
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
