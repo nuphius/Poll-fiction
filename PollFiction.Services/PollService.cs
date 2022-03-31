@@ -2,6 +2,7 @@
 using PollFiction.Data;
 using PollFiction.Data.Model;
 using PollFiction.Services.Interfaces;
+using PollFiction.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,44 @@ namespace PollFiction.Services
             };
 
             return user;
+        }
+
+        public async Task<bool> SaveCreatePollAsync(CreatePollViewModel poll)
+        {
+            Poll pollDb = new Poll
+            {
+                PollTitle = poll.Titre,
+                Polldate = DateTime.Now,
+                PollMultiple = poll.Multiple,
+                UserId = 5,
+                PollDescription = poll.Description,
+                PollDisable = false,
+                PollLinkAccess = Guid.NewGuid().ToString().Replace("-","").ToUpper(),
+                PollLinkDisable = Guid.NewGuid().ToString().Replace("-","").ToUpper(),
+                PollLinkStat = Guid.NewGuid().ToString().Replace("-", "").ToUpper()
+            };
+
+            await _ctx.AddAsync(pollDb);
+            await _ctx.SaveChangesAsync();
+
+            List<Choice> listChoices = new List<Choice>();
+
+            foreach (var item in poll.Choices)
+            {
+                Choice choiceDb = new Choice
+                {
+                    PollId = pollDb.PollId,
+                    ChoiceText = item, 
+                    Poll=pollDb
+                };
+
+                listChoices.Add(choiceDb);
+            }
+
+            await _ctx.AddRangeAsync(listChoices);
+            await _ctx.SaveChangesAsync();
+
+            return true;
         }
     }
 }

@@ -16,6 +16,8 @@ namespace PollFiction.Data.Model
         [StringLength(maximumLength:255)]
         public string PollTitle { get; set; }
         [Required]
+        [DataType(DataType.MultilineText)]
+        public string PollDescription { get; set; }
         public DateTime Polldate { get; set; }
         [DefaultValue(false)]
         public bool PollMultiple { get; set; }
