@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using PollFiction.Data;
 using PollFiction.Data.Model;
 using PollFiction.Services.Interfaces;
@@ -15,61 +16,85 @@ namespace PollFiction.Services
     {
         private readonly AppDbContext _ctx;
         private readonly HttpContext _httpContext;
+        private readonly int _userId;
         public PollService(AppDbContext ctx, IHttpContextAccessor contextAccessor)
         {
             _ctx = ctx;
             _httpContext = contextAccessor.HttpContext;
-        }
-        public User LoadDashboardAsync()
-        {
-            var a = _httpContext.User.Claims.ToList();
 
-            User user = new User
+            var idCookie = _httpContext.User.Claims.FirstOrDefault(u => u.Type.Equals("id"));
+
+            if (idCookie != null)
             {
-                UserPseudo = a[0].Value,
-                UserName = a[1].Value,
-                UserId = Convert.ToInt32(a[2].Value)
-            };
+                _userId = Convert.ToInt32(idCookie.Value);
+            }
+            
+        }
+        public async Task<List<Poll>> LoadDashboardAsync()
+        {
+            var poll = await _ctx.Polls.Select(p => new Poll
+                                                        {
+                                                            UserId = _userId,
+                                                            PollId = p.PollId,
+                                                            Choices = p.Choices,
+                                                            Polldate = DateTime.Now,
+                                                            PollDescription = p.PollDescription,
+                                                            PollDisable = p.PollDisable,
+                                                            PollGuests = p.PollGuests,
+                                                            PollLinkAccess = p.PollLinkAccess,
+                                                            PollLinkDisable = p.PollLinkDisable,
+                                                            PollLinkStat = p.PollLinkStat,
+                                                            PollMultiple = p.PollMultiple,
+                                                            PollTitle = p.PollTitle,
+                                                            User = p.User
+                                                        }).Where(p => p.UserId == _userId).ToListAsync();
 
-            return user;
+
+            return poll;
         }
 
-        public async Task<bool> SaveCreatePollAsync(CreatePollViewModel poll)
+        public async Task<Poll> SaveCreatePollAsync(CreatePollViewModel poll)
         {
+            var mail = _ctx.Users.Where(u => u.UserId.Equals(_userId)).Select(s => s.UserMail);
+
             Poll pollDb = new Poll
             {
                 PollTitle = poll.Titre,
                 Polldate = DateTime.Now,
                 PollMultiple = poll.Multiple,
-                UserId = 5,
+                UserId = _userId,
                 PollDescription = poll.Description,
                 PollDisable = false,
-                PollLinkAccess = Guid.NewGuid().ToString().Replace("-","").ToUpper(),
-                PollLinkDisable = Guid.NewGuid().ToString().Replace("-","").ToUpper(),
-                PollLinkStat = Guid.NewGuid().ToString().Replace("-", "").ToUpper()
+                PollLinkAccess = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
+                PollLinkDisable = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
+                PollLinkStat = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
+                Choices = poll.Choices.Select(c => new Choice
+                {
+                    ChoiceText = c
+                }).ToList()
             };
 
             await _ctx.AddAsync(pollDb);
             await _ctx.SaveChangesAsync();
 
-            List<Choice> listChoices = new List<Choice>();
+            //List<Choice> listChoices = new List<Choice>();
 
-            foreach (var item in poll.Choices)
-            {
-                Choice choiceDb = new Choice
-                {
-                    PollId = pollDb.PollId,
-                    ChoiceText = item, 
-                    Poll=pollDb
-                };
+            //foreach (var item in poll.Choices)
+            //{
+            //    Choice choiceDb = new Choice
+            //    {
+            //        PollId = pollDb.PollId,
+            //        ChoiceText = item, 
+            //        Poll=pollDb
+            //    };
 
-                listChoices.Add(choiceDb);
-            }
+            //    listChoices.Add(choiceDb);
+            //}
 
-            await _ctx.AddRangeAsync(listChoices);
-            await _ctx.SaveChangesAsync();
+            //await _ctx.AddRangeAsync(listChoices);
+            //await _ctx.SaveChangesAsync();
 
-            return true;
+            return pollDb;
         }
     }
 }

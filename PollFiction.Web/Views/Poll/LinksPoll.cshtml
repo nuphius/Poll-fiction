@@ -1,0 +1,47 @@
+﻿@model PollFiction.Services.Models.LinksPollViewModel
+
+@{
+    ViewData["Title"] = "Liens d'accès de votre sondage";
+}
+
+<h1>Vos liens du sondage</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="LinksPoll">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="LinkPoll" class="control-label"></label>
+                <input asp-for="LinkPoll" class="form-control" />
+                <span asp-validation-for="LinkPoll" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LinkStat" class="control-label"></label>
+                <input asp-for="LinkStat" class="form-control" />
+                <span asp-validation-for="LinkStat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LinkDelete" class="control-label"></label>
+                <input asp-for="LinkDelete" class="form-control" />
+                <span asp-validation-for="LinkDelete" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GuestMail" class="control-label"></label>
+                <input asp-for="GuestMail" class="form-control" />
+                <span asp-validation-for="GuestMail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Envoyer les invitations" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Dashboard">Revenir au tableau de bord</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -10,8 +10,8 @@ namespace PollFiction.Services.Interfaces
 {
     public interface IPollService
     {
-        User LoadDashboardAsync();
+        Task<List<Poll>> LoadDashboardAsync();
 
-        Task<bool> SaveCreatePollAsync(CreatePollViewModel poll);
+        Task<Poll> SaveCreatePollAsync(CreatePollViewModel poll);
     }
 }

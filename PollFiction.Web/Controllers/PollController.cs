@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PollFiction.Data.Model;
 using PollFiction.Services.Interfaces;
 using PollFiction.Services.Models;
 using PollFiction.Web.Models;
@@ -24,9 +25,9 @@ namespace PollFiction.Web.Controllers
         }
 
         [Authorize]
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
-            var model = _pollService.LoadDashboardAsync();
+            var model = await _pollService.LoadDashboardAsync();
 
             return View(model);
         }
@@ -41,7 +42,21 @@ namespace PollFiction.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePoll(CreatePollViewModel model)
         {
-            bool rst = await _pollService.SaveCreatePollAsync(model);
+            //bool rst = await _pollService.SaveCreatePollAsync(model);
+            Poll rst = await _pollService.SaveCreatePollAsync(model);
+
+            if (rst != null)
+            {
+                LinksPollViewModel links = new LinksPollViewModel
+                {
+                    LinkDelete = rst.PollLinkDisable,
+                    LinkPoll = rst.PollLinkAccess,
+                    LinkStat = rst.PollLinkStat
+                };
+
+                return View("LinksPoll",links);
+                //return RedirectToAction(nameof(Dashboard)); //changer pour linlksppoll
+            }
 
             return View(model);
         }

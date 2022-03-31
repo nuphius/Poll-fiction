@@ -13,15 +13,31 @@ for details on configuring this project to bundle and minify static web assets. 
     margin-bottom:40px;
 }
 
-.index-lien a{
-    display:inline-block;
+.deco-lien a{
+    display: inline-block;
     border: 1px solid black;
-    padding:15px 40px;
+    padding: 5px 20px;
     border-radius: 10px;
-    text-decoration : none;
+    text-decoration: none;
+    color: darkred;
+    background-color: cornflowerblue;
+    font-weight: bold;
+}
+
+.deco-black{
     color:black;
-    background-color:cornflowerblue;
-    font-weight:bold;
+}
+
+
+.index-lien a {
+    display: inline-block;
+    border: 1px solid black;
+    padding: 15px 40px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: black;
+    background-color: cornflowerblue;
+    font-weight: bold;
 }
 .index-lien a:first-child {
     margin-right:100px;
@@ -68,10 +84,10 @@ h1{
     margin-left: 40px;
 }
 
-    #ListChoice li {
-        list-style-type: none;
-        width: 70%;
-    }
+#ListChoice li {
+    list-style-type: none;
+    width: 70%;
+}
 
 .imgDel {
     cursor: pointer;
