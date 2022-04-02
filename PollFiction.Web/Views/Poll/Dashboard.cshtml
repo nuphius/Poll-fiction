@@ -9,7 +9,7 @@
 <hr />
 <div class="container">
     <div class="container-form">
-        <form action="CodePoll" method="post">
+        <form action="CodePoll" method="post" class="form1">
             <div>
                 <input type="text" class="searchPoll" placeholder="Saisiez un code de sondage" />
                 <input type="submit" value="Rechercher" class="btn btn-primary" />
@@ -21,6 +21,7 @@
             foreach(var poll in Model)
             {
                 <div>@poll.PollTitle</div>
+                <div><a href="#"> lien tu sondage @poll.PollId </a> </div>
             }
         }
     </div>

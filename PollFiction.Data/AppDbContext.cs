@@ -31,7 +31,7 @@ namespace PollFiction.Data
                         .HasForeignKey(s => s.PollId)
                         .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<PollGuest>().HasKey(sc => new { sc.PollId, sc.GuestId });
+            //modelBuilder.Entity<PollGuest>().HasKey(sc => new { sc.PollId, sc.GuestId });
 
             modelBuilder.Entity<PollGuest>()
                         .HasOne<Poll>(sc => sc.Poll)
@@ -46,7 +46,7 @@ namespace PollFiction.Data
                         .HasForeignKey(sc => sc.GuestId)
                         .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<GuestChoice>().HasKey(sc => new { sc.ChoiceId, sc.GuestId });
+           // modelBuilder.Entity<GuestChoice>().HasKey(sc => new { sc.ChoiceId, sc.GuestId });
 
             modelBuilder.Entity<GuestChoice>()
                         .HasOne<Choice>(sc => sc.Choice)

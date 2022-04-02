@@ -44,6 +44,7 @@ namespace PollFiction.Data.Migrations
                     PollId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PollTitle = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PollDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Polldate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PollMultiple = table.Column<bool>(type: "bit", nullable: false),
                     PollDisable = table.Column<bool>(type: "bit", nullable: false),
@@ -87,12 +88,14 @@ namespace PollFiction.Data.Migrations
                 name: "PollGuests",
                 columns: table => new
                 {
+                    PollGuestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     PollId = table.Column<int>(type: "int", nullable: false),
                     GuestId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PollGuests", x => new { x.PollId, x.GuestId });
+                    table.PrimaryKey("PK_PollGuests", x => x.PollGuestId);
                     table.ForeignKey(
                         name: "FK_PollGuests_Guests_GuestId",
                         column: x => x.GuestId,
@@ -111,13 +114,15 @@ namespace PollFiction.Data.Migrations
                 name: "GuestChoices",
                 columns: table => new
                 {
+                    GuestChoiceId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ChoiceId = table.Column<int>(type: "int", nullable: false),
-                    GuestId = table.Column<int>(type: "int", nullable: false),
-                    NumberVote = table.Column<int>(type: "int", nullable: false)
+                    NumberVote = table.Column<int>(type: "int", nullable: false),
+                    GuestId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GuestChoices", x => new { x.ChoiceId, x.GuestId });
+                    table.PrimaryKey("PK_GuestChoices", x => x.GuestChoiceId);
                     table.ForeignKey(
                         name: "FK_GuestChoices_Choices_ChoiceId",
                         column: x => x.ChoiceId,
@@ -138,6 +143,11 @@ namespace PollFiction.Data.Migrations
                 column: "PollId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GuestChoices_ChoiceId",
+                table: "GuestChoices",
+                column: "ChoiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GuestChoices_GuestId",
                 table: "GuestChoices",
                 column: "GuestId");
@@ -146,6 +156,11 @@ namespace PollFiction.Data.Migrations
                 name: "IX_PollGuests_GuestId",
                 table: "PollGuests",
                 column: "GuestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PollGuests_PollId",
+                table: "PollGuests",
+                column: "PollId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Polls_UserId",

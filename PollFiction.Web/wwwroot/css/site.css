@@ -1,4 +1,4 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+﻿ /* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
 /* Début CSS personnalisé de PollFiction !!!!!!*/
@@ -27,7 +27,6 @@ for details on configuring this project to bundle and minify static web assets. 
 .deco-black{
     color:black;
 }
-
 
 .index-lien a {
     display: inline-block;
@@ -63,10 +62,16 @@ h1{
     border-radius: 10px;
 }
 
-.container-form form {
+.form1 {
     display:block;
     margin:auto;
     max-width : 60%;
+}
+
+.form2 {
+    display: block;
+    margin: auto;
+    max-width: 80%;
 }
 .searchPoll {
     display:inline-block;
@@ -80,11 +85,11 @@ h1{
     border-radius: .25rem;
 }
 
-#ListChoice {
+#ListChoice, #ListGuest {
     margin-left: 40px;
 }
 
-#ListChoice li {
+#ListChoice li, #ListGuest li {
     list-style-type: none;
     width: 70%;
 }
@@ -95,7 +100,55 @@ h1{
     width: 24px;
 }
 
+.input-link {
+    display: inline-block;
+    width: 79%;
+    background-color: #fff;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    vertical-align:middle;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.input-link-disable {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+.vert{
+    color:forestgreen;
+    font-weight:bold;
+    font-size:20px;
+}
 /* Fin CSS personnalisé de PollFiction !!!!!!*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 a.navbar-brand {
     white-space: normal;
     text-align: center;

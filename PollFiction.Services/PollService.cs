@@ -17,6 +17,8 @@ namespace PollFiction.Services
         private readonly AppDbContext _ctx;
         private readonly HttpContext _httpContext;
         private readonly int _userId;
+
+        
         public PollService(AppDbContext ctx, IHttpContextAccessor contextAccessor)
         {
             _ctx = ctx;
@@ -30,6 +32,13 @@ namespace PollFiction.Services
             }
             
         }
+
+        /// <summary>
+        /// Chargement de infos des sondage pour le tableau de bord
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="contextAccessor"></param>
+        #region PollService
         public async Task<List<Poll>> LoadDashboardAsync()
         {
             var poll = await _ctx.Polls.Select(p => new Poll
@@ -52,6 +61,7 @@ namespace PollFiction.Services
 
             return poll;
         }
+        #endregion
 
         public async Task<Poll> SaveCreatePollAsync(CreatePollViewModel poll)
         {
@@ -95,6 +105,27 @@ namespace PollFiction.Services
             //await _ctx.SaveChangesAsync();
 
             return pollDb;
+        }
+
+        public async Task SaveGuestPollAsync(LinksPollViewModel mailGuest)
+        {
+            List<PollGuest> pollGuests = new List<PollGuest>();
+
+            foreach (var mail in mailGuest.GuestMails)
+            {
+                PollGuest pollGuest = new PollGuest
+                {
+                    PollId = mailGuest.PollId,
+                    Guest = new Guest
+                    {
+                        GuestMail = mail
+                    }
+                };
+
+                await _ctx.AddAsync(pollGuest);
+            }
+
+            await _ctx.SaveChangesAsync();
         }
     }
 }

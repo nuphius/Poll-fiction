@@ -7,34 +7,51 @@
 <h1>Vos liens du sondage</h1>
 
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="LinksPoll">
+<div class="container">
+    <div class="container-form">
+        <form asp-action="LinksPoll" class="form2" id="FormGuest">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group"> 
                 <label asp-for="LinkPoll" class="control-label"></label>
-                <input asp-for="LinkPoll" class="form-control" />
+                <br />
+                <input id="poll" asp-for="LinkPoll" class="input-link input-link-disable" disabled />
+                <input type="button" value="Copier" onclick="copie('poll')" />
+                <span id="pollSpan" class="vert"></span>
                 <span asp-validation-for="LinkPoll" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="LinkStat" class="control-label"></label>
-                <input asp-for="LinkStat" class="form-control" />
+                <input id="stat" asp-for="LinkStat" class="input-link input-link-disable" disabled />
+                <input type="button" value="Copier" onclick="copie('stat')" />
+                <span id="statSpan" class="vert"></span>
                 <span asp-validation-for="LinkStat" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="LinkDelete" class="control-label"></label>
-                <input asp-for="LinkDelete" class="form-control" />
+                <input id="desabled" asp-for="LinkDelete" class="input-link input-link-disable" disabled />
+                <input type="button" value="Copier" onclick="copie('desabled')" />
+                <span id="desabledSpan" class="vert"></span>
                 <span asp-validation-for="LinkDelete" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="GuestMail" class="control-label"></label>
-                <input asp-for="GuestMail" class="form-control" />
+                <br />
+                <input id="Guest" asp-for="GuestMail" class="input-link" placeholder="Saisiez une adresse E-mail à inviter" />
+                <input type="button" value="Inviter" class="btn btn-primary" onclick="AddGuest('ListGuest', 'Guest', 'FormGuest')" />
+                <br />
                 <span asp-validation-for="GuestMail" class="text-danger"></span>
+                <input type="hidden" name="PollId" value="@Model.PollId" />
+                
             </div>
             <div class="form-group">
                 <input type="submit" value="Envoyer les invitations" class="btn btn-primary" />
             </div>
         </form>
+
+        <h4>Liste des invités</h4>
+        <ul id="ListGuest">
+
+        </ul>
     </div>
 </div>
 
@@ -44,4 +61,96 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function copie(link){
+            let content = document.getElementById(link).value;
+
+            navigator.clipboard.writeText(content)
+                .then(() => {
+                console.log("Text copied to clipboard...")
+
+                document.getElementById("statSpan").innerHTML = "";
+                document.getElementById("pollSpan").innerHTML = "";
+                document.getElementById("desabledSpan").innerHTML = "";
+
+                document.getElementById(link+"Span").innerHTML = "OK!";
+
+            })
+                .catch(err => {
+                console.log('Something went wrong', err);
+            })
+ 
+        }
+
+        let count = 1;
+
+           function DelGuest(nbr, formulaire, input, liste, li) {
+
+               let form = document.getElementById(formulaire);
+               let inputToDelete = document.getElementById(input);
+               form.removeChild(inputToDelete);
+
+               let list = document.getElementById(liste);
+               list.removeChild(document.getElementById(li));
+           }
+
+            function AddGuest (liste, guest, form) {
+
+                //on récupère la valeur a afficher
+                let choice = document.getElementById(guest).value;
+                let masque =/^([\w\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/gm;
+                let error = true;
+
+                if (!choice.match(masque)) {
+                    console.log(" n'est pas une adresse valide");
+                    error = false;
+                }
+
+                if(choice != "" && error){
+ 
+                    //recupére la balise ul et crée la li
+                    let list = document.getElementById(liste);
+                    let entry = document.createElement('li');
+                    entry.id = "li"+liste+count;
+
+                    //ajout dans d'un li dans la balise ul
+                    list.appendChild(entry);
+
+                    //Création balise span
+                    let span = document.createElement("span");
+                    span.innerHTML =  '  -  '+choice;
+                    //entry.appendChild(span);
+
+                    //Création balise INPUT
+                    let input = document.createElement("input");
+                    input.setAttribute("type", "hidden");
+                    input.setAttribute("name", "GuestMails");
+                    input.setAttribute("value", choice);
+                    input.id = "input"+liste+count;
+
+                    //ajout au depuis la balise form
+                    document.getElementById(form).appendChild(input);
+
+                    //Création balise IMG
+                    let image = document.createElement("img");
+                    image.id="Img"+liste+count;
+                    image.src = "../images/delete48.png";
+                    image.alt = "Supprimer";
+                    image.className = "imgDel";
+                    image.setAttribute("onclick", "DelGuest("+count+", '"+form+"','input"+liste+count+"','"+liste+"','li"+liste+count+"')");
+
+                    entry.appendChild(image);
+                    //entry = document.getElementById("liChoice"+count);
+                    entry.appendChild(span);
+                    //entry.appendChild(document.createTextNode(choice));
+                    
+
+                    //Effacement du contenu du champ saisie
+                    document.getElementById(guest).value = '';
+
+                    count++;
+                }
+            }
+
+    </script>
 }

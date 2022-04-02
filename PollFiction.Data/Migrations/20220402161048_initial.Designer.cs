@@ -10,8 +10,8 @@ using PollFiction.Data;
 namespace PollFiction.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220330145833_descriptionadd")]
-    partial class descriptionadd
+    [Migration("20220402161048_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -60,6 +60,11 @@ namespace PollFiction.Data.Migrations
 
             modelBuilder.Entity("PollFiction.Data.Model.GuestChoice", b =>
                 {
+                    b.Property<int>("GuestChoiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<int>("ChoiceId")
                         .HasColumnType("int");
 
@@ -69,7 +74,9 @@ namespace PollFiction.Data.Migrations
                     b.Property<int>("NumberVote")
                         .HasColumnType("int");
 
-                    b.HasKey("ChoiceId", "GuestId");
+                    b.HasKey("GuestChoiceId");
+
+                    b.HasIndex("ChoiceId");
 
                     b.HasIndex("GuestId");
 
@@ -122,15 +129,22 @@ namespace PollFiction.Data.Migrations
 
             modelBuilder.Entity("PollFiction.Data.Model.PollGuest", b =>
                 {
-                    b.Property<int>("PollId")
-                        .HasColumnType("int");
+                    b.Property<int>("PollGuestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("GuestId")
                         .HasColumnType("int");
 
-                    b.HasKey("PollId", "GuestId");
+                    b.Property<int>("PollId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PollGuestId");
 
                     b.HasIndex("GuestId");
+
+                    b.HasIndex("PollId");
 
                     b.ToTable("PollGuests");
                 });

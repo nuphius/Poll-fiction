@@ -13,9 +13,11 @@ namespace PollFiction.Data.Model
         public int ChoiceId { get; set; }
         [Required]
         public string ChoiceText { get; set; }
-        [Required]
+        public int NumberVote { get; set; } = 0;
+
 
         //relation 1 - n avec la table Poll
+        [Required]
         public Poll Poll { get; set; } = new Poll();
         [Required]
         public int PollId { get; set; }

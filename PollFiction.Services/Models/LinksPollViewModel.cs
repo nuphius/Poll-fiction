@@ -9,6 +9,7 @@ namespace PollFiction.Services.Models
 {
     public class LinksPollViewModel
     {
+        public int PollId { get; set; }
         [Display(Name ="Lien d'acces au sondage")]
         public string LinkPoll { get; set; }
         [Display(Name = "Lien d'acces aux résultats su sondage")]

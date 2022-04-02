@@ -49,9 +49,10 @@ namespace PollFiction.Web.Controllers
             {
                 LinksPollViewModel links = new LinksPollViewModel
                 {
-                    LinkDelete = rst.PollLinkDisable,
-                    LinkPoll = rst.PollLinkAccess,
-                    LinkStat = rst.PollLinkStat
+                    LinkDelete = "https://"+ Request.Host.Value + @"/Poll/Sondage?code="+rst.PollLinkDisable,
+                    LinkPoll = "https://" + Request.Host.Value + @"/Poll/Sondage?code=" + rst.PollLinkAccess,
+                    LinkStat = "https://" + Request.Host.Value + @"/Poll/Sondage?code=" + rst.PollLinkStat,
+                    PollId = rst.PollId                   
                 };
 
                 return View("LinksPoll",links);
@@ -59,6 +60,15 @@ namespace PollFiction.Web.Controllers
             }
 
             return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult LinksPoll(LinksPollViewModel model)
+        {
+            _pollService.SaveGuestPollAsync(model);
+
+            return RedirectToAction(nameof(Dashboard));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
