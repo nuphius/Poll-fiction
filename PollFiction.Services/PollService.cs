@@ -63,6 +63,12 @@ namespace PollFiction.Services
         }
         #endregion
 
+        /// <summary>
+        /// Enregristement de sondage crée dans la BDD
+        /// </summary>
+        /// <param name="poll"></param>
+        /// <returns></returns>
+        #region SaveCreatePollAsync
         public async Task<Poll> SaveCreatePollAsync(CreatePollViewModel poll)
         {
             var mail = _ctx.Users.Where(u => u.UserId.Equals(_userId)).Select(s => s.UserMail);
@@ -106,7 +112,14 @@ namespace PollFiction.Services
 
             return pollDb;
         }
+        #endregion
 
+        /// <summary>
+        /// Enregistrement dans la BDD des Guest a un sondage
+        /// </summary>
+        /// <param name="mailGuest"></param>
+        /// <returns></returns>
+        #region SaveGuestPollAsync
         public async Task SaveGuestPollAsync(LinksPollViewModel mailGuest)
         {
             List<PollGuest> pollGuests = new List<PollGuest>();
@@ -126,6 +139,33 @@ namespace PollFiction.Services
             }
 
             await _ctx.SaveChangesAsync();
+        }
+        #endregion
+
+        public async Task<(Poll,string)> SearchPollByCodeAsync(string code)
+        {
+            Poll poll = await _ctx.Polls.FirstOrDefaultAsync<Poll>(p => p.PollLinkAccess.Equals(code));
+
+            if (poll == null)
+            {
+                poll = await _ctx.Polls.FirstOrDefaultAsync<Poll>(p => p.PollLinkDisable.Equals(code));
+                //ici désactiver le sondage
+                return (poll, null);
+            }   
+            else if (poll == null)
+            {
+                poll = await _ctx.Polls.FirstOrDefaultAsync<Poll>(p => p.PollLinkStat.Equals(code));
+                return (poll, "Stat");
+            }
+            else if (poll == null)
+                return (null, null);
+            else
+                return (poll, "Vote");
+        }
+
+        public async Task<List<Choice>> SearchChoiceAsync(int pollid)
+        {
+            return await _ctx.Choices.Where(choice => choice.PollId == pollid).ToListAsync();
         }
     }
 }

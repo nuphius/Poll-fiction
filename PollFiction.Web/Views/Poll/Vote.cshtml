@@ -1,0 +1,45 @@
+﻿@model PollFiction.Services.Models.VotePollViewModel
+
+@{
+    ViewData["Title"] = "Vote au sondage " + Model.Poll.PollTitle;
+}
+
+<h4>@Model.Poll.PollTitle</h4>
+<hr />
+<div class="container">
+    <div class="container-form">
+        <h5>Description</h5>
+        <p>
+            @Model.Poll.PollDescription
+        </p>
+    </div>
+    <div class="container-form">
+        <form asp-action="Vote" >
+
+            @{
+
+
+                foreach(var choice in Model.Choices)
+                {
+                    if (!Model.Poll.PollMultiple)
+                    {
+                        @Html.RadioButtonFor(m => m.ChoiceId , choice.ChoiceId) <span>@Html.Label(@choice.ChoiceText)</span>
+                        <br />
+                    }
+                }
+            }
+            
+            <div class="form-group">
+                <input type="submit" value="Voter !" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Dashboard">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

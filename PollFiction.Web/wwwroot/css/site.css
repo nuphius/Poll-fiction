@@ -127,28 +127,22 @@ h1{
     font-weight:bold;
     font-size:20px;
 }
+.container-lien-poll{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+.container-lien-poll:hover {
+    background-color: aliceblue;
+    border-radius: .25rem;
+    padding-left:5px;
+}
+.img-list-poll-dashbord {
+    height: 35px;
+    width: auto;
+    margin: 0 10px 0 10px;
+}
 /* Fin CSS personnalisé de PollFiction !!!!!!*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 a.navbar-brand {
     white-space: normal;
     text-align: center;

@@ -6,6 +6,7 @@ using PollFiction.Data.Model;
 using PollFiction.Services.Interfaces;
 using PollFiction.Services.Models;
 using PollFiction.Web.Models;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -25,7 +26,7 @@ namespace PollFiction.Web.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Dashboard()
+        public async Task<IActionResult> Dashboard(string error = "")
         {
             var model = await _pollService.LoadDashboardAsync();
 
@@ -62,13 +63,41 @@ namespace PollFiction.Web.Controllers
             return View(model);
         }
 
-        [Authorize]
-        [HttpPost]
+        [Authorize, HttpPost]
         public IActionResult LinksPoll(LinksPollViewModel model)
         {
             _pollService.SaveGuestPollAsync(model);
 
             return RedirectToAction(nameof(Dashboard));
+        }
+
+        [Authorize, HttpGet]
+        public async Task<IActionResult> Vote(string code)
+        {
+            (Poll poll, string view) = await _pollService.SearchPollByCodeAsync(code);
+
+            if (poll != null && view != null)
+            {
+                List<Choice> choices = await _pollService.SearchChoiceAsync(poll.PollId);
+                VotePollViewModel model = new VotePollViewModel
+                {
+                    Choices = choices,
+                    Poll = poll
+                };
+
+                return View(view, model);
+            }
+            else if(view == null)
+                return RedirectToAction(nameof(Dashboard));
+            else
+                return View(nameof(Dashboard), "Ce code n'existe pas !");
+        }
+
+        [Authorize, HttpPost]
+        public IActionResult Vote(VotePollViewModel model)
+        {
+
+            return View(model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
