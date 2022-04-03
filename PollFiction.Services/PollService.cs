@@ -17,6 +17,7 @@ namespace PollFiction.Services
         private readonly AppDbContext _ctx;
         private readonly HttpContext _httpContext;
         private readonly int _userId;
+        private readonly User _user;
 
         
         public PollService(AppDbContext ctx, IHttpContextAccessor contextAccessor)
@@ -29,6 +30,7 @@ namespace PollFiction.Services
             if (idCookie != null)
             {
                 _userId = Convert.ToInt32(idCookie.Value);
+                _user = _ctx.Users.FirstOrDefault<User>(u => u.UserId == _userId);
             }
             
         }
@@ -122,50 +124,129 @@ namespace PollFiction.Services
         #region SaveGuestPollAsync
         public async Task SaveGuestPollAsync(LinksPollViewModel mailGuest)
         {
-            List<PollGuest> pollGuests = new List<PollGuest>();
+            //invitation du créateur du sondage afin qu'il puisse voter
+            //mailGuest.GuestMails.Add(_user.UserMail);
+
+            //Guest issetMailInBdd = new Guest();
+
+            //foreach (var mail in mailGuest.GuestMails)
+            //{
+            //   var mailInBdd = _ctx.Guests.FirstOrDefault<Guest>(g => g.GuestMail == mail);
+
+            //    PollGuest pollGuest = new PollGuest
+            //    {
+            //        PollId = mailGuest.PollId,
+            //        Guest = new Guest
+            //        {
+            //            GuestMail = mail
+            //        }
+            //    };
+
+            //    await _ctx.AddAsync(pollGuest);
+            //}
+
+            //await _ctx.SaveChangesAsync();
+
+            //invitation du créateur du sondage afin qu'il puisse voter
+            mailGuest.GuestMails.Add(_user.UserMail);
+
+            // List<PollGuest> pollGuests = new List<PollGuest>();
+            Guest issetMailInBdd;
 
             foreach (var mail in mailGuest.GuestMails)
             {
-                PollGuest pollGuest = new PollGuest
+                issetMailInBdd = _ctx.Guests.FirstOrDefault<Guest>(g => g.GuestMail.Equals(mail));
+
+                if (issetMailInBdd == null)
                 {
-                    PollId = mailGuest.PollId,
-                    Guest = new Guest
+                    PollGuest pollGuest = new PollGuest
                     {
-                        GuestMail = mail
-                    }
-                };
-
-                await _ctx.AddAsync(pollGuest);
+                        PollId = mailGuest.PollId,
+                        Guest = new Guest
+                        {
+                            GuestMail = mail
+                        }
+                    };
+                    _ctx.Add(pollGuest);
+                }
+                else
+                {
+                    PollGuest pollGuest = new PollGuest
+                    {
+                        PollId = mailGuest.PollId,
+                        GuestId = issetMailInBdd.GuestId
+                    };
+                    await _ctx.AddAsync(pollGuest);
+                }
             }
-
             await _ctx.SaveChangesAsync();
         }
         #endregion
 
-        public async Task<(Poll,string)> SearchPollByCodeAsync(string code)
+        public async Task<(Poll,string, int)> SearchPollByCodeAsync(string code)
         {
-            Poll poll = await _ctx.Polls.FirstOrDefaultAsync<Poll>(p => p.PollLinkAccess.Equals(code));
-
-            if (poll == null)
+            //on récupere le Poll qui correspond au code
+            Poll poll = await _ctx.Polls.Where(p => p.PollLinkAccess.Equals(code) ||
+                                              p.PollLinkDisable.Equals(code) ||
+                                              p.PollLinkStat.Equals(code)).FirstOrDefaultAsync();
+            if (poll.PollLinkStat == code)
             {
-                poll = await _ctx.Polls.FirstOrDefaultAsync<Poll>(p => p.PollLinkDisable.Equals(code));
-                //ici désactiver le sondage
-                return (poll, null);
-            }   
-            else if (poll == null)
-            {
-                poll = await _ctx.Polls.FirstOrDefaultAsync<Poll>(p => p.PollLinkStat.Equals(code));
-                return (poll, "Stat");
+                return (poll, "Stat", 0);
             }
-            else if (poll == null)
-                return (null, null);
+
+
+            //on verifie que l'utilisateur  est un GuestId
+            var guestId = await _ctx.Guests.Where(u => u.GuestMail.Equals(_user.UserMail)).Select( u => u.GuestId).FirstOrDefaultAsync();
+
+            //on verifie que le Guest soit invité a ce sondage
+            if (guestId != 0)
+            {
+                var isGuest = await _ctx.PollGuests.Where(g => g.PollId.Equals(poll.PollId) && g.GuestId.Equals(guestId)).FirstOrDefaultAsync();
+
+                //on verifie que la personne est invité et quel type de code c'est
+                if (isGuest != null)
+                {
+                    if (poll.PollLinkAccess == code)
+                        return (poll, "Vote", guestId);
+                    else
+                    {
+                        return (poll, null, 0);    //sinon c'est un code de désactivation  
+                    }
+                        
+                }
+                else
+                    return (null, null, 0);
+            }
             else
-                return (poll, "Vote");
+                return (null, null, 0);
         }
 
         public async Task<List<Choice>> SearchChoiceAsync(int pollid)
         {
             return await _ctx.Choices.Where(choice => choice.PollId == pollid).ToListAsync();
+        }
+
+        public async Task<bool> SaveChoiceVoteAsync(VotePollViewModel votePoll)
+        {
+
+            var choices = _ctx.Choices
+                                .Include(p => p.GuestChoices)
+                                .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId))
+                                .ToList();
+
+            if(choices != null)
+            {
+
+                foreach(var choice in choices)
+                {
+                    choice.GuestChoices[0].ChoiceId = votePoll.ChoiceId;
+
+                    _ctx.Update(choice);
+                }
+            }
+
+            await _ctx.SaveChangesAsync();
+            return true;
         }
     }
 }

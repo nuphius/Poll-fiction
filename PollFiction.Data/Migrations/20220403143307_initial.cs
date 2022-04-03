@@ -71,6 +71,7 @@ namespace PollFiction.Data.Migrations
                     ChoiceId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChoiceText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NumberVote = table.Column<int>(type: "int", nullable: false),
                     PollId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -117,7 +118,6 @@ namespace PollFiction.Data.Migrations
                     GuestChoiceId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChoiceId = table.Column<int>(type: "int", nullable: false),
-                    NumberVote = table.Column<int>(type: "int", nullable: false),
                     GuestId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

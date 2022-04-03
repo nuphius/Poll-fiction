@@ -16,8 +16,10 @@ namespace PollFiction.Services.Interfaces
 
         Task SaveGuestPollAsync(LinksPollViewModel mailGuest);
 
-        Task<(Poll, string)> SearchPollByCodeAsync(string code);
+        Task<(Poll, string, int)> SearchPollByCodeAsync(string code);
 
         Task<List<Choice>> SearchChoiceAsync(int pollid);
+
+        Task<bool> SaveChoiceVoteAsync(VotePollViewModel votePoll);
     }
 }

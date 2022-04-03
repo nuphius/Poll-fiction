@@ -74,7 +74,7 @@ namespace PollFiction.Web.Controllers
         [Authorize, HttpGet]
         public async Task<IActionResult> Vote(string code)
         {
-            (Poll poll, string view) = await _pollService.SearchPollByCodeAsync(code);
+            (Poll poll, string view, int guestId) = await _pollService.SearchPollByCodeAsync(code);
 
             if (poll != null && view != null)
             {
@@ -82,7 +82,8 @@ namespace PollFiction.Web.Controllers
                 VotePollViewModel model = new VotePollViewModel
                 {
                     Choices = choices,
-                    Poll = poll
+                    Poll = poll,
+                    GuestId = guestId
                 };
 
                 return View(view, model);
@@ -90,14 +91,16 @@ namespace PollFiction.Web.Controllers
             else if(view == null)
                 return RedirectToAction(nameof(Dashboard));
             else
-                return View(nameof(Dashboard), "Ce code n'existe pas !");
+                return View(nameof(Dashboard), "Ce code n'existe pas ou vous n'étes pas invité");
         }
 
         [Authorize, HttpPost]
         public IActionResult Vote(VotePollViewModel model)
         {
 
-            return View(model);
+            var a = _pollService.SaveChoiceVoteAsync(model);
+
+            return RedirectToAction(nameof(Dashboard));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

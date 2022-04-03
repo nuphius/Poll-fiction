@@ -10,7 +10,7 @@ using PollFiction.Data;
 namespace PollFiction.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220402161048_initial")]
+    [Migration("20220403143307_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,9 @@ namespace PollFiction.Data.Migrations
                     b.Property<string>("ChoiceText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberVote")
+                        .HasColumnType("int");
 
                     b.Property<int>("PollId")
                         .HasColumnType("int");
@@ -69,9 +72,6 @@ namespace PollFiction.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("GuestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberVote")
                         .HasColumnType("int");
 
                     b.HasKey("GuestChoiceId");
