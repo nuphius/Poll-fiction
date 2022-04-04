@@ -63,6 +63,17 @@ namespace PollFiction.Web.Controllers
             return View(model);
         }
 
+        [Authorize, HttpGet]
+        public async Task<IActionResult> LinksPoll(int pollId)
+        {
+            LinksPollViewModel model = await _pollService.DisplayLinksPollAsync(pollId);
+
+            if (model != null)
+                return View(model);
+            else
+                return View(nameof(Dashboard), "Vous n'étes pas le créateur de ce sondage !");
+        }
+
         [Authorize, HttpPost]
         public IActionResult LinksPoll(LinksPollViewModel model)
         {

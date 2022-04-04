@@ -25,7 +25,9 @@
                 <div class="container-lien-poll">
                     <a href="#" class="lien-sondage" title="">@poll.PollTitle</a>
                     <div>
-                        <img src="~/images/lien40.png" alt="Liens du sondage" title="Liens du sondage" class="img-list-poll-dashbord">
+                        <a href="/Poll/LinksPoll?pollId=@poll.PollId" title="voter">
+                            <img src="~/images/lien40.png" alt="Liens du sondage" title="Liens du sondage" class="img-list-poll-dashbord">
+                        </a>
                         <img src="~/images/modify40.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
                         <a href="/Poll/Vote?code=@poll.PollLinkAccess" title="voter">
                             <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">

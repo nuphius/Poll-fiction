@@ -236,12 +236,6 @@ namespace PollFiction.Services
 
             if(choices.Count != 0)
             {
-                //var count = 0;
-
-                //if (votePoll.CheckChoice != null)
-                //    count = votePoll.CheckChoice.Count;
-                //else
-                //    count = 1;
 
                 if (votePoll.CheckChoice == null)
                 {
@@ -264,29 +258,9 @@ namespace PollFiction.Services
                             ChoiceId = newChoice,
                             GuestId = votePoll.GuestId
                         };
-                        _ctx.Add(newAddVote);
+                        await _ctx.AddAsync(newAddVote);
                     }
                 }
-
-                //for (int i = 0; i < choices.Count; i++)
-                //{
-                //    if (i < count)
-                //    {
-                //        if (votePoll.ChoiceId == 0)
-                //        {
-                //            choices[i].GuestChoices[0].ChoiceId = votePoll.CheckChoice[i];
-                //        }
-                //        else
-                //        {
-                //            choices[i].GuestChoices[0].ChoiceId = votePoll.ChoiceId;
-                //        }
-                //        _ctx.Update(choices[i].GuestChoices[0]);
-                //    }
-                //    else
-                //    {
-                //        _ctx.Remove(choices[i].GuestChoices[0]);
-                //    }  
-                //}
             }
             else
             {
@@ -314,6 +288,20 @@ namespace PollFiction.Services
             }
 
             await _ctx.SaveChangesAsync();
+        }
+
+        public async Task<LinksPollViewModel> DisplayLinksPollAsync(int pollid)
+        {
+            LinksPollViewModel linksPoll = await _ctx.Polls
+                                               .Where(p => p.PollId == pollid && p.UserId.Equals(_userId))
+                                               .Select(p => new LinksPollViewModel
+                                               {
+                                                   LinkDelete = p.PollLinkDisable,
+                                                   LinkPoll = p.PollLinkAccess,
+                                                   LinkStat = p.PollLinkStat,
+                                                   PollId = pollid
+                                               }).FirstOrDefaultAsync();
+            return linksPoll;
         }
     }
 }

@@ -21,5 +21,7 @@ namespace PollFiction.Services.Interfaces
         Task<List<Choice>> SearchChoiceAsync(int pollid);
 
         Task SaveChoiceVoteAsync(VotePollViewModel votePoll);
+
+        Task<LinksPollViewModel> DisplayLinksPollAsync(int pollid);
     }
 }
