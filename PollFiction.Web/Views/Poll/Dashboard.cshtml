@@ -1,4 +1,4 @@
-﻿@model List<PollFiction.Data.Model.Poll>
+﻿@model List<PollFiction.Services.Models.DashboardViewModel>
 @{
     ViewData["Title"] = "Tableau de bord de "+@User.Claims.FirstOrDefault(u => u.Type.Equals("name")).Value;
     //Layout = "~/Views/Shared/_LayoutUser.cshtml";
@@ -23,13 +23,16 @@
             foreach(var poll in Model)
             {
                 <div class="container-lien-poll">
-                    <a href="/Poll/Vote?code=@poll.PollLinkAccess" class="lien-sondage" title="">@poll.PollTitle</a>
+                    <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" class="lien-sondage" title="">@poll.PollCreator.PollTitle</a> 
+                    <span class="vert">
+                        @if(poll.PollCreatorVote != ""){ @poll.PollCreatorVote } 
+                    </span>
                     <div>
-                        <a href="/Poll/LinksPoll?pollId=@poll.PollId" title="voter">
+                        <a href="/Poll/LinksPoll?pollId=@poll.PollCreator.PollId" title="voter">
                             <img src="~/images/lien40.png" alt="Liens du sondage" title="Liens du sondage" class="img-list-poll-dashbord">
                         </a>
                         @*<img src="~/images/modify40.png" alt="Motifier le sondage" class="img-list-poll-dashbord">*@
-                        <a href="/Poll/Vote?code=@poll.PollLinkAccess" title="voter">
+                        <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" title="voter">
                             <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
                         </a>
                         <img src="~/images/combine48.png" alt="Motifier le sondage" class="img-list-poll-dashbord">

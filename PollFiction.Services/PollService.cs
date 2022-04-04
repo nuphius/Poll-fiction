@@ -41,7 +41,7 @@ namespace PollFiction.Services
         /// <param name="ctx"></param>
         /// <param name="contextAccessor"></param>
         #region PollService
-        public async Task<List<Poll>> LoadDashboardAsync()
+        public async Task<List<DashboardViewModel>> LoadDashboardAsync()
         {   
             //ont récupère le guestId
             int guestId = await _ctx.Guests.Where(g => g.GuestMail.Equals(_user.UserMail))
@@ -90,8 +90,8 @@ namespace PollFiction.Services
                 model.Add(dashboard); 
             }
 
-
-            return polls;
+            return model;
+            //return polls;
         }
         #endregion
 
