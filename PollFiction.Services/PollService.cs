@@ -42,13 +42,18 @@ namespace PollFiction.Services
         /// <param name="contextAccessor"></param>
         #region PollService
         public async Task<List<Poll>> LoadDashboardAsync()
-        {
-            var poll = await _ctx.Polls.Select(p => new Poll
+        {   
+            //ont récupère le guestId
+            int guestId = await _ctx.Guests.Where(g => g.GuestMail.Equals(_user.UserMail))
+                                           .Select(g => g.GuestId)
+                                           .FirstOrDefaultAsync();
+
+            var polls = await _ctx.Polls.Select(p => new Poll
                                                         {
                                                             UserId = _userId,
                                                             PollId = p.PollId,
                                                             Choices = p.Choices,
-                                                            Polldate = DateTime.Now,
+                                                            Polldate = p.Polldate,
                                                             PollDescription = p.PollDescription,
                                                             PollDisable = p.PollDisable,
                                                             PollGuests = p.PollGuests,
@@ -60,8 +65,33 @@ namespace PollFiction.Services
                                                             User = p.User
                                                         }).Where(p => p.UserId == _userId).ToListAsync();
 
+            List<DashboardViewModel> model = new List<DashboardViewModel>();
 
-            return poll;
+            foreach (var poll in polls)
+            {
+                string voted = string.Empty;
+
+                var pollVote = _ctx.Choices
+                                .Include(p => p.GuestChoices)
+                                .Where(x => x.GuestChoices.Any(y => y.GuestId == guestId) && x.PollId == poll.PollId)
+                                .ToList();
+
+                if (pollVote.Count != 0)
+                {
+                    voted = "(voté !)";
+                }
+
+                DashboardViewModel dashboard = new DashboardViewModel
+                {
+                    PollCreator = poll,
+                    PollCreatorVote = voted
+                };
+
+                model.Add(dashboard); 
+            }
+
+
+            return polls;
         }
         #endregion
 
