@@ -1,6 +1,6 @@
 ﻿@model List<PollFiction.Data.Model.Poll>
 @{
-    ViewData["Title"] = "Tableau de bord de ";
+    ViewData["Title"] = "Tableau de bord de "+@User.Claims.FirstOrDefault(u => u.Type.Equals("name")).Value;
     //Layout = "~/Views/Shared/_LayoutUser.cshtml";
 }
 
@@ -25,8 +25,11 @@
                 <div class="container-lien-poll">
                     <a href="#" class="lien-sondage" title="">@poll.PollTitle</a>
                     <div>
+                        <img src="~/images/lien40.png" alt="Liens du sondage" title="Liens du sondage" class="img-list-poll-dashbord">
                         <img src="~/images/modify40.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
-                        <a href="/Poll/Vote?code=@poll.PollLinkAccess" title="voter"><img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord"></a>
+                        <a href="/Poll/Vote?code=@poll.PollLinkAccess" title="voter">
+                            <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
+                        </a>
                         <img src="~/images/combine48.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
                         <img src="~/images/close60.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
                     </div>
@@ -35,5 +38,3 @@
         }
     </div>
 </div>
-
-@Html.ActionLink("Déconnecter", "Logout", "Home")

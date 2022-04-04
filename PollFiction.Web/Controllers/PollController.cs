@@ -98,7 +98,7 @@ namespace PollFiction.Web.Controllers
         public IActionResult Vote(VotePollViewModel model)
         {
 
-            var a = _pollService.SaveChoiceVoteAsync(model);
+            _pollService.SaveChoiceVoteAsync(model);
 
             return RedirectToAction(nameof(Dashboard));
         }

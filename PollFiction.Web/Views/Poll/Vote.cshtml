@@ -27,8 +27,12 @@
                         <br />
                     }
                     else
-                    {
-                        <input type="checkbox" name="CheckChoice" value="@choice.ChoiceId" /><span>@Html.Label(@choice.ChoiceText)</span>
+                    {   
+                        
+                        <input type="checkbox" name="CheckChoice" value="@choice.ChoiceId" id="@choice.ChoiceId" /> 
+                        <span>
+                            <label for="@choice.ChoiceId" > @choice.ChoiceText</label>
+                        </span>
                         <br />
                     }
                 }

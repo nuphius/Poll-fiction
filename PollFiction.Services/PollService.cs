@@ -226,27 +226,94 @@ namespace PollFiction.Services
             return await _ctx.Choices.Where(choice => choice.PollId == pollid).ToListAsync();
         }
 
-        public async Task<bool> SaveChoiceVoteAsync(VotePollViewModel votePoll)
+        public async Task SaveChoiceVoteAsync(VotePollViewModel votePoll)
         {
 
             var choices = _ctx.Choices
                                 .Include(p => p.GuestChoices)
-                                .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId))
+                                .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId) && x.PollId == votePoll.PollId)
                                 .ToList();
 
-            if(choices != null)
+            if(choices.Count != 0)
             {
+                //var count = 0;
 
-                foreach(var choice in choices)
+                //if (votePoll.CheckChoice != null)
+                //    count = votePoll.CheckChoice.Count;
+                //else
+                //    count = 1;
+
+                if (votePoll.CheckChoice == null)
                 {
-                    choice.GuestChoices[0].ChoiceId = votePoll.ChoiceId;
-
-                    _ctx.Update(choice);
+                    choices[0].GuestChoices[0].ChoiceId = votePoll.ChoiceId;
+                    _ctx.Update(choices[0].GuestChoices[0]);
                 }
+                else
+                {
+                    foreach (var choice in choices)
+                    {
+                        _ctx.Remove(choice.GuestChoices[0]);
+                    }
+
+                    //_ctx.SaveChanges();
+
+                    foreach (var newChoice in votePoll.CheckChoice)
+                    {
+                        var newAddVote = new GuestChoice
+                        {
+                            ChoiceId = newChoice,
+                            GuestId = votePoll.GuestId
+                        };
+                        _ctx.Add(newAddVote);
+                    }
+                }
+
+                //for (int i = 0; i < choices.Count; i++)
+                //{
+                //    if (i < count)
+                //    {
+                //        if (votePoll.ChoiceId == 0)
+                //        {
+                //            choices[i].GuestChoices[0].ChoiceId = votePoll.CheckChoice[i];
+                //        }
+                //        else
+                //        {
+                //            choices[i].GuestChoices[0].ChoiceId = votePoll.ChoiceId;
+                //        }
+                //        _ctx.Update(choices[i].GuestChoices[0]);
+                //    }
+                //    else
+                //    {
+                //        _ctx.Remove(choices[i].GuestChoices[0]);
+                //    }  
+                //}
+            }
+            else
+            {
+                if(votePoll.CheckChoice.Count != 0)
+                {
+                    foreach (var item in votePoll.CheckChoice)
+                    {
+                        var newAddVote = new GuestChoice
+                        {
+                            ChoiceId = item,
+                            GuestId = votePoll.GuestId
+                        };
+                        _ctx.Add(newAddVote);
+                    }  
+                }
+                else
+                {
+                    var newAddVote = new GuestChoice
+                    {
+                        ChoiceId = votePoll.ChoiceId,
+                        GuestId = votePoll.GuestId
+                    };
+                    _ctx.Add(newAddVote);
+                } 
             }
 
             await _ctx.SaveChangesAsync();
-            return true;
         }
     }
 }
