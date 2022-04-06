@@ -102,10 +102,10 @@ namespace PollFiction.Web.Controllers
             else if (view == null)
             {
 
-                return RedirectToAction(nameof(Dashboard));
+                return RedirectToAction(nameof(Error));
             } 
             else
-                return View(nameof(Dashboard), "Ce code n'existe pas ou vous n'étes pas invité");
+                return View(nameof(Error));
         }
 
         [Authorize, HttpPost]
@@ -116,7 +116,6 @@ namespace PollFiction.Web.Controllers
 
             return RedirectToAction(nameof(Dashboard));
         }
-
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

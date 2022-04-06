@@ -219,10 +219,17 @@ namespace PollFiction.Services
             Poll poll = await _ctx.Polls.Where(p => p.PollLinkAccess.Equals(code) ||
                                               p.PollLinkDisable.Equals(code) ||
                                               p.PollLinkStat.Equals(code)).FirstOrDefaultAsync();
-            if (poll.PollLinkStat == code)
+            if (poll != null)
             {
-                return (poll, "Stat", 0);
+                if (poll.PollLinkStat == code)
+                {
+                    return (poll, "Stat", 0);
+                }
             }
+            else
+            {
+                return (null, null, 0);
+            }          
 
 
             //on verifie que l'utilisateur  est un GuestId
