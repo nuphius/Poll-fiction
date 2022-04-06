@@ -41,7 +41,7 @@ namespace PollFiction.Services
         /// <param name="ctx"></param>
         /// <param name="contextAccessor"></param>
         #region PollService
-        public async Task<List<DashboardViewModel>> LoadDashboardAsync()
+        public async Task<DashboardViewModel> LoadDashboardAsync()
         {   
             //ont récupère le guestId
             int guestId = await _ctx.Guests.Where(g => g.GuestMail.Equals(_user.UserMail))
@@ -65,7 +65,7 @@ namespace PollFiction.Services
                                                             User = p.User
                                                         }).Where(p => p.UserId == _userId).ToListAsync();
 
-            List<DashboardViewModel> model = new List<DashboardViewModel>();
+            DashboardViewModel model = new DashboardViewModel();
 
             foreach (var poll in polls)
             {
@@ -81,13 +81,13 @@ namespace PollFiction.Services
                     voted = "(voté !)";
                 }
 
-                DashboardViewModel dashboard = new DashboardViewModel
+                ListPollViewModel pollForDashboard = new ListPollViewModel
                 {
                     PollCreator = poll,
                     PollCreatorVote = voted
                 };
 
-                model.Add(dashboard); 
+                model.listPollViewModels.Add(pollForDashboard); 
             }
 
             return model;
@@ -226,12 +226,16 @@ namespace PollFiction.Services
 
 
             //on verifie que l'utilisateur  est un GuestId
-            var guestId = await _ctx.Guests.Where(u => u.GuestMail.Equals(_user.UserMail)).Select( u => u.GuestId).FirstOrDefaultAsync();
+            var guestId = await _ctx.Guests
+                    .Where(u => u.GuestMail.Equals(_user.UserMail))
+                    .Select( u => u.GuestId)
+                    .FirstOrDefaultAsync();
 
             //on verifie que le Guest soit invité a ce sondage
-            if (guestId != 0)
+            if (guestId != 0 && !poll.PollDisable)
             {
-                var isGuest = await _ctx.PollGuests.Where(g => g.PollId.Equals(poll.PollId) && g.GuestId.Equals(guestId)).FirstOrDefaultAsync();
+                var isGuest = await _ctx.PollGuests.Where(g => g.PollId.Equals(poll.PollId) && g.GuestId.Equals(guestId))
+                                                   .FirstOrDefaultAsync();
 
                 //on verifie que la personne est invité et quel type de code c'est
                 if (isGuest != null)
@@ -240,6 +244,7 @@ namespace PollFiction.Services
                         return (poll, "Vote", guestId);
                     else
                     {
+                        await DisablePollAsync(poll);
                         return (poll, null, 0);    //sinon c'est un code de désactivation  
                     }
                         
@@ -253,7 +258,9 @@ namespace PollFiction.Services
 
         public async Task<List<Choice>> SearchChoiceAsync(int pollid)
         {
-            return await _ctx.Choices.Where(choice => choice.PollId == pollid).ToListAsync();
+            return await _ctx.Choices
+                .Include(p=>p.GuestChoices)
+                .Where(choice => choice.PollId == pollid).ToListAsync();
         }
 
         public async Task SaveChoiceVoteAsync(VotePollViewModel votePoll)
@@ -332,6 +339,14 @@ namespace PollFiction.Services
                                                    PollId = pollid
                                                }).FirstOrDefaultAsync();
             return linksPoll;
+        }
+
+        public async Task DisablePollAsync(Poll poll)
+        {
+            poll.PollDisable = true;
+            //_ctx.Update(poll);
+
+            await _ctx.SaveChangesAsync();
         }
     }
 }

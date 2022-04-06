@@ -28,6 +28,23 @@ for details on configuring this project to bundle and minify static web assets. 
     color:black;
 }
 
+.lien-sondage{
+    width:50%;
+}
+
+.lien-sondage-disable{
+    font-weight:bold;
+    color:darkred;
+}
+
+.vote {
+    width: 10%;
+}
+.dashbord-image{
+    width:20%;
+    text-align:right;
+}
+
 .index-lien a {
     display: inline-block;
     border: 1px solid black;

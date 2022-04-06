@@ -1,5 +1,4 @@
-﻿using PollFiction.Data.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +8,7 @@ namespace PollFiction.Services.Models
 {
     public class DashboardViewModel
     {
-        public Poll PollCreator { get; set; }
-        public Poll PollGuest { get; set; }
-        public string PollCreatorVote { get; set; }
-        public string PollGuestVote { get; set; }
+        public List<ListPollViewModel> listPollViewModels { get; set; } = new List<ListPollViewModel>();
+        public string Error { get; set; }
     }
 }

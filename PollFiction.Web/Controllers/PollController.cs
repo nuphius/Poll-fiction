@@ -26,9 +26,9 @@ namespace PollFiction.Web.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Dashboard(string error = "")
+        public async Task<IActionResult> Dashboard(string error)
         {
-            var model = await _pollService.LoadDashboardAsync();
+            DashboardViewModel model = await _pollService.LoadDashboardAsync();
 
             return View(model);
         }
@@ -99,8 +99,11 @@ namespace PollFiction.Web.Controllers
 
                 return View(view, model);
             }
-            else if(view == null)
+            else if (view == null)
+            {
+
                 return RedirectToAction(nameof(Dashboard));
+            } 
             else
                 return View(nameof(Dashboard), "Ce code n'existe pas ou vous n'étes pas invité");
         }
@@ -113,6 +116,8 @@ namespace PollFiction.Web.Controllers
 
             return RedirectToAction(nameof(Dashboard));
         }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

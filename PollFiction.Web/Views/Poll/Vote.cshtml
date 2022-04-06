@@ -17,19 +17,28 @@
         <form asp-action="Vote" >
 
             @{
-
+                
 
                 foreach(var choice in Model.Choices)
                 {
+                    string check = string.Empty;
+
+                    if (@choice.GuestChoices.Count != 0)
+                    {
+                        check = "checked";
+                    }
+
                     if (!Model.Poll.PollMultiple)
                     {
-                        @Html.RadioButtonFor(m => m.ChoiceId , choice.ChoiceId) <span>@Html.Label(@choice.ChoiceText)</span>
+                        <input type="radio" name="ChoiceId" value="@choice.ChoiceId" id="choice.ChoiceId" @check/>
+                        <span>
+                            <label for="@choice.ChoiceId" > @choice.ChoiceText</label>
+                        </span>
                         <br />
                     }
                     else
-                    {   
-                        
-                        <input type="checkbox" name="CheckChoice" value="@choice.ChoiceId" id="@choice.ChoiceId" /> 
+                    {
+                        <input type="checkbox" name="CheckChoice" value="@choice.ChoiceId" id="@choice.ChoiceId"  @check/> 
                         <span>
                             <label for="@choice.ChoiceId" > @choice.ChoiceText</label>
                         </span>

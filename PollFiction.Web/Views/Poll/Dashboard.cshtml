@@ -1,4 +1,4 @@
-﻿@model List<PollFiction.Services.Models.DashboardViewModel>
+﻿@model PollFiction.Services.Models.DashboardViewModel
 @{
     ViewData["Title"] = "Tableau de bord de "+@User.Claims.FirstOrDefault(u => u.Type.Equals("name")).Value;
     //Layout = "~/Views/Shared/_LayoutUser.cshtml";
@@ -20,17 +20,37 @@
         <h4>Vos sondage crées</h4>
         
         @{
-            foreach(var poll in Model)
+
+            if (!string.IsNullOrEmpty(Model.Error)){
+                <div>
+                    @Model.Error
+                </div>
+            }
+
+            foreach(var poll in Model.listPollViewModels)
             {
                 <div class="container-lien-poll">
-                    <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" class="lien-sondage" title="">@poll.PollCreator.PollTitle</a> 
-                    <span class="vert">
+                    @if (!poll.PollCreator.PollDisable)
+                    {
+                        <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" class="lien-sondage" title="">
+                            @poll.PollCreator.PollTitle
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="lien-sondage lien-sondage-disable">
+                            @poll.PollCreator.PollTitle
+                        </span>
+                    }
+                    <span class="vert vote">
                         @if(poll.PollCreatorVote != ""){ @poll.PollCreatorVote } 
                     </span>
-                    <div>
-                        <span class="small font-weight-bold" style="margin-right:15px;">
-                            @poll.PollCreator.Polldate.ToString("dd/MM/yy") 
-                        </span>
+                    <span class="small font-weight-bold" style="margin-right:15px;">
+                        @poll.PollCreator.Polldate.ToString("dd/MM/yy") 
+                    </span>
+                    <div class="dashbord-image">
+                        @if(!poll.PollCreator.PollDisable){
+
                         <a href="/Poll/LinksPoll?pollId=@poll.PollCreator.PollId" title="voter">
                             <img src="~/images/lien40.png" alt="Liens du sondage" title="Liens du sondage" class="img-list-poll-dashbord">
                         </a>
@@ -38,8 +58,15 @@
                         <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" title="voter">
                             <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
                         </a>
+                            
+
+                        <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkDisable" title="Désactiver la sondage">
+                            <img src="~/images/close60.png" alt="Désactiver le sonf" class="img-list-poll-dashbord">
+                        </a>
+                        }
+
                         <img src="~/images/combine48.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
-                        <img src="~/images/close60.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
+                        
                     </div>
                 </div>
             }
