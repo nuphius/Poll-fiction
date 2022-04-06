@@ -18,12 +18,14 @@ namespace PollFiction.Services.Interfaces
 
         Task<(Poll, string, int)> SearchPollByCodeAsync(string code);
 
-        Task<List<Choice>> SearchChoiceAsync(int pollid);
+        Task<List<Choice>> SearchChoiceAsync(int pollid, int guestId);
 
         Task SaveChoiceVoteAsync(VotePollViewModel votePoll);
 
         Task<LinksPollViewModel> DisplayLinksPollAsync(int pollid);
 
         Task DisablePollAsync(Poll poll);
+
+        Task<StatViewModel> StatOfPollAsync(string code);
     }
 }

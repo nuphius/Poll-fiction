@@ -223,7 +223,7 @@ namespace PollFiction.Services
             {
                 if (poll.PollLinkStat == code)
                 {
-                    return (poll, "Stat", 0);
+                    return (poll, "Stats", 0);
                 }
             }
             else
@@ -263,11 +263,11 @@ namespace PollFiction.Services
                 return (null, null, 0);
         }
 
-        public async Task<List<Choice>> SearchChoiceAsync(int pollid)
+        public async Task<List<Choice>> SearchChoiceAsync(int pollid, int guestId)
         {
             return await _ctx.Choices
                 .Include(p=>p.GuestChoices)
-                .Where(choice => choice.PollId == pollid).ToListAsync();
+                .Where(c => c.GuestChoices.Any(c => c.GuestId == guestId) && c.PollId == pollid).ToListAsync();
         }
 
         public async Task SaveChoiceVoteAsync(VotePollViewModel votePoll)
@@ -354,6 +354,33 @@ namespace PollFiction.Services
             //_ctx.Update(poll);
 
             await _ctx.SaveChangesAsync();
+        }
+
+        public async Task<StatViewModel> StatOfPollAsync(string code)
+        {
+            var stat = await _ctx.Polls
+                            .Include(p => p.Choices)
+                            .ThenInclude(c => c.GuestChoices)
+                            .Where(p => p.PollLinkStat == code)
+                            .FirstOrDefaultAsync();
+
+            if (stat != null)
+            {
+                StatViewModel statViewModel = new StatViewModel
+                {
+                    Poll = stat,
+                    Choices = stat.Choices.ToList(),
+                    GuestChoices = stat.Choices.SelectMany(x => x.GuestChoices, (a, b) => new GuestChoice
+                    {
+                        ChoiceId = b.ChoiceId,
+                        GuestId = b.GuestId,
+                        GuestChoiceId = b.GuestChoiceId
+                    }).ToList()
+                };
+                return statViewModel;
+            }
+
+            return null;
         }
     }
 }

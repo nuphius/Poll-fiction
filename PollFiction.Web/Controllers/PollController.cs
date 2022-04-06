@@ -89,15 +89,20 @@ namespace PollFiction.Web.Controllers
 
             if (poll != null && view != null)
             {
-                List<Choice> choices = await _pollService.SearchChoiceAsync(poll.PollId);
+                List<Choice> choices = await _pollService.SearchChoiceAsync(poll.PollId, guestId);
                 VotePollViewModel model = new VotePollViewModel
                 {
-                    Choices = choices,
+                    Choices = choices, //tout modifier pour retourner les réponses si existe déja...
                     Poll = poll,
                     GuestId = guestId
                 };
 
-                return View(view, model);
+                if (view == "Stats")
+                {
+                    return RedirectToAction(nameof(Stats), new { codeStat = code });
+                }
+
+                return View(model);
             }
             else if (view == null)
             {
@@ -115,6 +120,13 @@ namespace PollFiction.Web.Controllers
             _pollService.SaveChoiceVoteAsync(model);
 
             return RedirectToAction(nameof(Dashboard));
+        }
+
+        public async Task<IActionResult> Stats(string codeStat)
+        {
+            StatViewModel model = await _pollService.StatOfPollAsync(codeStat);
+
+            return View(model);
         }
 
 

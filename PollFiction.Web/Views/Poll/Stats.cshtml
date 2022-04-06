@@ -1,0 +1,24 @@
+﻿@model PollFiction.Services.Models.StatViewModel
+
+@{
+    ViewData["Title"] = "Résultat du sondage - " + @Model.Poll.PollTitle;
+}
+<h4>Résultat - @Model.Poll.PollTitle</h4>
+<hr />
+<div class="container">
+    <div class="container-form">
+        <h5>Description</h5>
+        <p>
+            @Model.Poll.PollDescription
+        </p>
+    </div>
+    <div class="container-form">
+
+        Nombre de participant : 
+        
+    </div>
+</div>
+
+<div>
+    <a asp-action="Dashboard">Revenir au tableau de bord</a>
+</div>
