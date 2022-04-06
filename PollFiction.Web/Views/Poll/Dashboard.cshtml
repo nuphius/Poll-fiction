@@ -28,6 +28,9 @@
                         @if(poll.PollCreatorVote != ""){ @poll.PollCreatorVote } 
                     </span>
                     <div>
+                        <span class="small font-weight-bold" style="margin-right:15px;">
+                            @poll.PollCreator.Polldate.ToString("dd/MM/yy") 
+                        </span>
                         <a href="/Poll/LinksPoll?pollId=@poll.PollCreator.PollId" title="voter">
                             <img src="~/images/lien40.png" alt="Liens du sondage" title="Liens du sondage" class="img-list-poll-dashbord">
                         </a>

@@ -50,9 +50,9 @@ namespace PollFiction.Web.Controllers
             {
                 LinksPollViewModel links = new LinksPollViewModel
                 {
-                    LinkDelete = "https://"+ Request.Host.Value + @"/Poll/Sondage?code="+rst.PollLinkDisable,
-                    LinkPoll = "https://" + Request.Host.Value + @"/Poll/Sondage?code=" + rst.PollLinkAccess,
-                    LinkStat = "https://" + Request.Host.Value + @"/Poll/Sondage?code=" + rst.PollLinkStat,
+                    LinkDelete = "https://"+ Request.Host.Value + @"/Poll/Vote?code="+rst.PollLinkDisable,
+                    LinkPoll = "https://" + Request.Host.Value + @"/Poll/Vote?code=" + rst.PollLinkAccess,
+                    LinkStat = "https://" + Request.Host.Value + @"/Poll/Vote?code=" + rst.PollLinkStat,
                     PollId = rst.PollId                   
                 };
 

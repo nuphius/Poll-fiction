@@ -326,9 +326,9 @@ namespace PollFiction.Services
                                                .Where(p => p.PollId == pollid && p.UserId.Equals(_userId))
                                                .Select(p => new LinksPollViewModel
                                                {
-                                                   LinkDelete = p.PollLinkDisable,
-                                                   LinkPoll = p.PollLinkAccess,
-                                                   LinkStat = p.PollLinkStat,
+                                                   LinkDelete = "https://" + _httpContext.Request.Host.Value + @"/Poll/Vote?code=" + p.PollLinkDisable,
+                                                   LinkPoll = "https://" + _httpContext.Request.Host.Value + @"/Poll/Vote?code=" + p.PollLinkAccess,
+                                                   LinkStat = "https://" + _httpContext.Request.Host.Value + @"/Poll/Vote?code=" + p.PollLinkStat,
                                                    PollId = pollid
                                                }).FirstOrDefaultAsync();
             return linksPoll;
