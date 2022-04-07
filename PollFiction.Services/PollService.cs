@@ -19,7 +19,7 @@ namespace PollFiction.Services
         private readonly int _userId;
         private readonly User _user;
 
-        
+
         public PollService(AppDbContext ctx, IHttpContextAccessor contextAccessor)
         {
             _ctx = ctx;
@@ -32,7 +32,7 @@ namespace PollFiction.Services
                 _userId = Convert.ToInt32(idCookie.Value);
                 _user = _ctx.Users.FirstOrDefault<User>(u => u.UserId == _userId);
             }
-            
+
         }
 
         /// <summary>
@@ -42,28 +42,33 @@ namespace PollFiction.Services
         /// <param name="contextAccessor"></param>
         #region PollService
         public async Task<DashboardViewModel> LoadDashboardAsync()
-        {   
+        {
             //ont récupère le guestId
             int guestId = await _ctx.Guests.Where(g => g.GuestMail.Equals(_user.UserMail))
                                            .Select(g => g.GuestId)
                                            .FirstOrDefaultAsync();
 
-            var polls = await _ctx.Polls.Select(p => new Poll
-                                                        {
-                                                            UserId = _userId,
-                                                            PollId = p.PollId,
-                                                            Choices = p.Choices,
-                                                            Polldate = p.Polldate,
-                                                            PollDescription = p.PollDescription,
-                                                            PollDisable = p.PollDisable,
-                                                            PollGuests = p.PollGuests,
-                                                            PollLinkAccess = p.PollLinkAccess,
-                                                            PollLinkDisable = p.PollLinkDisable,
-                                                            PollLinkStat = p.PollLinkStat,
-                                                            PollMultiple = p.PollMultiple,
-                                                            PollTitle = p.PollTitle,
-                                                            User = p.User
-                                                        }).Where(p => p.UserId == _userId).ToListAsync();
+            //var polls = await _ctx.Polls.Select(p => new Poll
+            //{
+            //    UserId = _userId,
+            //    PollId = p.PollId,
+            //    Choices = p.Choices,
+            //    Polldate = p.Polldate,
+            //    PollDescription = p.PollDescription,
+            //    PollDisable = p.PollDisable,
+            //    PollGuests = p.PollGuests,
+            //    PollLinkAccess = p.PollLinkAccess,
+            //    PollLinkDisable = p.PollLinkDisable,
+            //    PollLinkStat = p.PollLinkStat,
+            //    PollMultiple = p.PollMultiple,
+            //    PollTitle = p.PollTitle,
+            //    User = p.User
+            //}).Where(p => p.UserId == _userId).ToListAsync();
+
+            var polls = await _ctx.Polls
+                                .Include(p=>p.PollGuests)
+                                .Include(p=>p.Choices)
+                                .ToListAsync();
 
             DashboardViewModel model = new DashboardViewModel();
 
@@ -83,11 +88,13 @@ namespace PollFiction.Services
 
                 ListPollViewModel pollForDashboard = new ListPollViewModel
                 {
-                    PollCreator = poll,
-                    PollCreatorVote = voted
+                    PollCreator = poll.UserId == _userId ? poll : null,
+                    PollCreatorVote = voted,
+                    PollGuest = poll,
+                    PollGuestVote = voted
                 };
 
-                model.listPollViewModels.Add(pollForDashboard); 
+                model.listPollViewModels.Add(pollForDashboard);
             }
 
             return model;
@@ -213,7 +220,7 @@ namespace PollFiction.Services
         }
         #endregion
 
-        public async Task<(Poll,string, int)> SearchPollByCodeAsync(string code)
+        public async Task<(Poll, string, int)> SearchPollByCodeAsync(string code)
         {
             //on récupere le Poll qui correspond au code
             Poll poll = await _ctx.Polls.Where(p => p.PollLinkAccess.Equals(code) ||
@@ -229,13 +236,13 @@ namespace PollFiction.Services
             else
             {
                 return (null, null, 0);
-            }          
+            }
 
 
             //on verifie que l'utilisateur  est un GuestId
             var guestId = await _ctx.Guests
                     .Where(u => u.GuestMail.Equals(_user.UserMail))
-                    .Select( u => u.GuestId)
+                    .Select(u => u.GuestId)
                     .FirstOrDefaultAsync();
 
             //on verifie que le Guest soit invité a ce sondage
@@ -254,7 +261,7 @@ namespace PollFiction.Services
                         await DisablePollAsync(poll);
                         return (poll, null, 0);    //sinon c'est un code de désactivation  
                     }
-                        
+
                 }
                 else
                     return (null, null, 0);
@@ -266,19 +273,37 @@ namespace PollFiction.Services
         public async Task<List<Choice>> SearchChoiceAsync(int pollid, int guestId)
         {
             return await _ctx.Choices
-                .Include(p=>p.GuestChoices)
-                .Where(c => c.GuestChoices.Any(c => c.GuestId == guestId) && c.PollId == pollid).ToListAsync();
+                .Include(p => p.GuestChoices)
+                .Where(c => c.PollId == pollid)
+                .Select(c => new Choice
+                {
+                    ChoiceId = c.ChoiceId,
+                    ChoiceText = c.ChoiceText,
+                    PollId = c.PollId,
+                    GuestChoices = c.GuestChoices.Where(x => x.GuestId == guestId).ToList()
+                }).ToListAsync();
         }
 
         public async Task SaveChoiceVoteAsync(VotePollViewModel votePoll)
         {
 
-            var choices = _ctx.Choices
-                                .Include(p => p.GuestChoices)
-                                .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId) && x.PollId == votePoll.PollId)
-                                .ToList();
+            //var choices = _ctx.Choices
+            //                    .Include(p => p.GuestChoices)
+            //                    .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId) && x.PollId == votePoll.PollId)
+            //                    .ToList();
 
-            if(choices.Count != 0)
+            var choices = _ctx.Choices
+                            .Include(p => p.GuestChoices)
+                            .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId) && x.PollId == votePoll.PollId)
+                            .Select(c => new Choice
+                            {
+                                ChoiceId = c.ChoiceId,
+                                ChoiceText = c.ChoiceText,
+                                PollId = c.PollId,
+                                GuestChoices = c.GuestChoices.Where(x => x.GuestId == votePoll.GuestId).ToList()
+                            }).ToList();
+
+            if (choices.Count != 0)
             {
 
                 if (votePoll.CheckChoice == null)
@@ -308,7 +333,7 @@ namespace PollFiction.Services
             }
             else
             {
-                if(votePoll.CheckChoice.Count != 0)
+                if (votePoll.CheckChoice.Count != 0)
                 {
                     foreach (var item in votePoll.CheckChoice)
                     {
@@ -318,7 +343,7 @@ namespace PollFiction.Services
                             GuestId = votePoll.GuestId
                         };
                         _ctx.Add(newAddVote);
-                    }  
+                    }
                 }
                 else
                 {
@@ -328,7 +353,7 @@ namespace PollFiction.Services
                         GuestId = votePoll.GuestId
                     };
                     _ctx.Add(newAddVote);
-                } 
+                }
             }
 
             await _ctx.SaveChangesAsync();
