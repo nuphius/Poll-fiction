@@ -107,7 +107,7 @@ namespace PollFiction.Web.Controllers
             else if (view == null)
             {
 
-                return RedirectToAction(nameof(Error));
+                return RedirectToAction(nameof(Dashboard));
             } 
             else
                 return View(nameof(Error));

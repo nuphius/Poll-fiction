@@ -90,7 +90,7 @@ namespace PollFiction.Services
                 {
                     PollCreator = poll.UserId == _userId ? poll : null,
                     PollCreatorVote = voted,
-                    PollGuest = poll,
+                    PollGuest = poll.PollGuests.FirstOrDefault(x => x.GuestId.Equals(guestId)) != null && poll.UserId != _userId  ? poll : null,
                     PollGuestVote = voted
                 };
 
@@ -259,7 +259,7 @@ namespace PollFiction.Services
                     else
                     {
                         await DisablePollAsync(poll);
-                        return (poll, null, 0);    //sinon c'est un code de désactivation  
+                        return (poll, null, 0);      
                     }
 
                 }
@@ -286,12 +286,6 @@ namespace PollFiction.Services
 
         public async Task SaveChoiceVoteAsync(VotePollViewModel votePoll)
         {
-
-            //var choices = _ctx.Choices
-            //                    .Include(p => p.GuestChoices)
-            //                    .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId) && x.PollId == votePoll.PollId)
-            //                    .ToList();
-
             var choices = _ctx.Choices
                             .Include(p => p.GuestChoices)
                             .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId) && x.PollId == votePoll.PollId)
@@ -318,8 +312,6 @@ namespace PollFiction.Services
                         _ctx.Remove(choice.GuestChoices[0]);
                     }
 
-                    //_ctx.SaveChanges();
-
                     foreach (var newChoice in votePoll.CheckChoice)
                     {
                         var newAddVote = new GuestChoice
@@ -333,7 +325,7 @@ namespace PollFiction.Services
             }
             else
             {
-                if (votePoll.CheckChoice.Count != 0)
+                if (votePoll.CheckChoice != null) 
                 {
                     foreach (var item in votePoll.CheckChoice)
                     {

@@ -9,9 +9,9 @@
 <hr />
 <div class="container">
     <div class="container-form">
-        <form action="CodePoll" method="post" class="form1">
+        <form action="vote" method="get" class="form1">
             <div>
-                <input type="text" class="searchPoll" placeholder="Saisiez un code de sondage" />
+                <input type="text" name="code" class="searchPoll" placeholder="Saisiez un code de sondage" />
                 <input type="submit" value="Rechercher" class="btn btn-primary" />
             </div>
         </form>
@@ -29,47 +29,101 @@
 
             foreach(var poll in Model.listPollViewModels)
             {
-                <div class="container-lien-poll">
-                    @if (!poll.PollCreator.PollDisable)
-                    {
-                        <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" class="lien-sondage" title="">
-                            @poll.PollCreator.PollTitle
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="lien-sondage lien-sondage-disable">
-                            @poll.PollCreator.PollTitle
-                        </span>
-                    }
-                    <span class="vert vote">
-                        @if(poll.PollCreatorVote != ""){ @poll.PollCreatorVote } 
-                    </span>
-                    <span class="small font-weight-bold" style="margin-right:15px;">
-                        @poll.PollCreator.Polldate.ToString("dd/MM/yy") 
-                    </span>
-                    <div class="dashbord-image">
-                        @if(!poll.PollCreator.PollDisable){
-
-                        <a href="/Poll/LinksPoll?pollId=@poll.PollCreator.PollId" title="voter">
-                            <img src="~/images/lien40.png" alt="Liens du sondage" title="Liens du sondage" class="img-list-poll-dashbord">
-                        </a>
-                        @*<img src="~/images/modify40.png" alt="Motifier le sondage" class="img-list-poll-dashbord">*@
-                        <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" title="voter">
-                            <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
-                        </a>
-                            
-
-                        <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkDisable" title="Désactiver la sondage">
-                            <img src="~/images/close60.png" alt="Désactiver le sonf" class="img-list-poll-dashbord">
-                        </a>
+                @if (poll.PollCreator != null)
+                {
+                    <div class="container-lien-poll">
+                        @if (!poll.PollCreator.PollDisable)
+                        {
+                            <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" class="lien-sondage" title="">
+                                @poll.PollCreator.PollTitle
+                            </a>
                         }
+                        else
+                        {
+                            <span class="lien-sondage lien-sondage-disable">
+                                @poll.PollCreator.PollTitle
+                            </span>
+                        }
+                        <span class="vert vote">
+                            @if (poll.PollCreatorVote != "")
+                            {
+                                @poll.PollCreatorVote
+                            } 
+                        </span>
+                        <span class="small font-weight-bold" style="margin-right:15px;">
+                            @poll.PollCreator.Polldate.ToString("dd/MM/yy") 
+                        </span>
+                        <div class="dashbord-image">
+                            @if (!poll.PollCreator.PollDisable)
+                            {
 
-                        <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkStat" title="Visualiser les résultats">
-                            <img src="~/images/combine48.png" alt="Visualiser les résultats" class="img-list-poll-dashbord">
-                        </a>
+                                <a href="/Poll/LinksPoll?pollId=@poll.PollCreator.PollId" title="voter">
+                                    <img src="~/images/lien40.png" alt="Liens du sondage" title="Liens du sondage" class="img-list-poll-dashbord">
+                                </a>
+                                @*<img src="~/images/modify40.png" alt="Motifier le sondage" class="img-list-poll-dashbord">*@
+                                <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkAccess" title="voter">
+                                    <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
+                                </a>
+
+
+                                <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkDisable" title="Désactiver la sondage">
+                                    <img src="~/images/close60.png" alt="Désactiver le sonf" class="img-list-poll-dashbord">
+                                </a>
+                            }
+
+                            <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkStat" title="Visualiser les résultats">
+                                <img src="~/images/combine48.png" alt="Visualiser les résultats" class="img-list-poll-dashbord">
+                            </a>
+                        </div>
                     </div>
-                </div>
+                }
+            }
+        }
+    </div>
+    <div class="container-form">
+        <h4>Vos sondage invités</h4>
+        
+        @{
+            foreach(var poll in Model.listPollViewModels)
+            {
+                @if (poll.PollGuest != null)
+                {
+                    <div class="container-lien-poll">
+                        @if (!poll.PollGuest.PollDisable)
+                        {
+                            <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkAccess" class="lien-sondage" title="">
+                                @poll.PollGuest.PollTitle
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="lien-sondage lien-sondage-disable">
+                                @poll.PollGuest.PollTitle
+                            </span>
+                        }
+                        <span class="vert vote">
+                            @if (poll.PollGuestVote != "")
+                            {
+                                @poll.PollGuestVote
+                            } 
+                        </span>
+                        <span class="small font-weight-bold" style="margin-right:15px;">
+                            @poll.PollGuest.Polldate.ToString("dd/MM/yy") 
+                        </span>
+                        <div class="dashbord-image">
+                            @if (!poll.PollGuest.PollDisable)
+                            {
+                                <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkAccess" title="voter">
+                                    <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
+                                </a>
+                            }
+
+                            <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkStat" title="Visualiser les résultats">
+                                <img src="~/images/combine48.png" alt="Visualiser les résultats" class="img-list-poll-dashbord">
+                            </a>
+                        </div>
+                    </div>
+                }
             }
         }
     </div>
