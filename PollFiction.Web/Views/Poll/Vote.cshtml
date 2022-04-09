@@ -1,4 +1,5 @@
-﻿@model PollFiction.Services.Models.VotePollViewModel
+﻿@using PollFiction.Data.Model
+@model PollFiction.Services.Models.VotePollViewModel
 
 @{
     ViewData["Title"] = "Vote au sondage " + Model.Poll.PollTitle;
@@ -13,13 +14,21 @@
             @Model.Poll.PollDescription
         </p>
     </div>
-    <div class="container-form">
+    <div class="container-form"> 
         <form asp-action="Vote" >
+
+            <p>
+            Nombre de votant : @Model.Poll.Choices.SelectMany(x => x.GuestChoices, (a, b) => new GuestChoice
+                    {
+                        GuestId = b.GuestId,
+                    }).ToList().GroupBy(x=>x.GuestId).Count()
+            @*.GuestChoices.GroupBy(x => x.GuestId).Count()*@
+            </p>
 
             @{
                 
 
-                foreach(var choice in Model.Choices)
+                 foreach(var choice in Model.Choices)
                 {
                     string check = string.Empty;
 

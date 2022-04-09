@@ -22,9 +22,9 @@
             @{
                 var a = @Model.GuestChoices.GroupBy(x => x.ChoiceId);
 
-                foreach(var item in a)
+                foreach(var item in Model.statChoices)
                 {
-                    <li>@Model.Choices.Where(x => x.ChoiceId == @item.Key).Select(x => x.ChoiceText).FirstOrDefault()  @item.Count()</li>
+                    <li>@item.StringChoice : @item.ScoreChoice votes</li>
                 }
             }
             

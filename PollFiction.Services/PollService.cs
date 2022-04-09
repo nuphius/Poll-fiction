@@ -48,23 +48,6 @@ namespace PollFiction.Services
                                            .Select(g => g.GuestId)
                                            .FirstOrDefaultAsync();
 
-            //var polls = await _ctx.Polls.Select(p => new Poll
-            //{
-            //    UserId = _userId,
-            //    PollId = p.PollId,
-            //    Choices = p.Choices,
-            //    Polldate = p.Polldate,
-            //    PollDescription = p.PollDescription,
-            //    PollDisable = p.PollDisable,
-            //    PollGuests = p.PollGuests,
-            //    PollLinkAccess = p.PollLinkAccess,
-            //    PollLinkDisable = p.PollLinkDisable,
-            //    PollLinkStat = p.PollLinkStat,
-            //    PollMultiple = p.PollMultiple,
-            //    PollTitle = p.PollTitle,
-            //    User = p.User
-            //}).Where(p => p.UserId == _userId).ToListAsync();
-
             var polls = await _ctx.Polls
                                 .Include(p=>p.PollGuests)
                                 .Include(p=>p.Choices)
@@ -223,7 +206,10 @@ namespace PollFiction.Services
         public async Task<(Poll, string, int)> SearchPollByCodeAsync(string code)
         {
             //on récupere le Poll qui correspond au code
-            Poll poll = await _ctx.Polls.Where(p => p.PollLinkAccess.Equals(code) ||
+            Poll poll = await _ctx.Polls
+                                .Include(p => p.Choices)
+                                .ThenInclude(c => c.GuestChoices)
+                                .Where(p => p.PollLinkAccess.Equals(code) ||
                                               p.PollLinkDisable.Equals(code) ||
                                               p.PollLinkStat.Equals(code)).FirstOrDefaultAsync();
             if (poll != null)
@@ -394,6 +380,23 @@ namespace PollFiction.Services
                         GuestChoiceId = b.GuestChoiceId
                     }).ToList()
                 };
+
+
+                List<StatChoice> tempStat = new List<StatChoice>();
+
+                foreach(var choice in stat.Choices)
+                {
+                    StatChoice statChoice = new StatChoice
+                    {
+                        StringChoice = choice.ChoiceText,
+                        ScoreChoice = choice.GuestChoices.Count
+                    };
+
+                    tempStat.Add(statChoice);
+                }
+
+                statViewModel.statChoices = tempStat.OrderByDescending(x => x.ScoreChoice).ToList();
+
                 return statViewModel;
             }
 
