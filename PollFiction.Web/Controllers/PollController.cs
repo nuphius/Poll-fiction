@@ -60,7 +60,6 @@ namespace PollFiction.Web.Controllers
                 };
 
                 return View("LinksPoll",links);
-                //return RedirectToAction(nameof(Dashboard)); //changer pour linlksppoll
             }
 
             return View(model);
@@ -95,7 +94,7 @@ namespace PollFiction.Web.Controllers
                 List<Choice> choices = await _pollService.SearchChoiceAsync(poll.PollId, guestId);
                 VotePollViewModel model = new VotePollViewModel
                 {
-                    Choices = choices, //tout modifier pour retourner les réponses si existe déja...
+                    Choices = choices,
                     Poll = poll,
                     GuestId = guestId
                 };
@@ -103,6 +102,10 @@ namespace PollFiction.Web.Controllers
                 if (view == "Stats")
                 {
                     return RedirectToAction(nameof(Stats), new { codeStat = code });
+                }
+                else if(view == "disable")
+                {
+                    return RedirectToAction(nameof(Dashboard));
                 }
 
                 return View(model);
@@ -117,12 +120,12 @@ namespace PollFiction.Web.Controllers
         }
 
         [Authorize, HttpPost]
-        public IActionResult Vote(VotePollViewModel model)
+        public async Task<IActionResult> Vote(VotePollViewModel model)
         {
 
-            _pollService.SaveChoiceVoteAsync(model);
+            var link = await _pollService.SaveChoiceVoteAsync(model);
 
-            return RedirectToAction(nameof(Stats), new { codeStat = model.Poll.PollLinkStat} );
+            return RedirectToAction(nameof(Stats), new { codeStat = link} );
         }
 
         public async Task<IActionResult> Stats(string codeStat)

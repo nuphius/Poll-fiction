@@ -83,6 +83,7 @@
         }
 
         let count = 1;
+        let mail = [];
 
            function DelGuest(nbr, formulaire, input, liste, li) {
 
@@ -98,15 +99,21 @@
 
                 //on récupère la valeur a afficher
                 let choice = document.getElementById(guest).value;
-                let masque =/^([\w\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/gm;
+                let masque =/^([\w\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
                 let error = true;
 
                 if (!choice.match(masque)) {
                     console.log(" n'est pas une adresse valide");
                     error = false;
                 }
+                else if(mail.indexOf(choice) != -1){
+                    console.log("Adresse déjà saisie");
+                    error = false;
+                }
 
                 if(choice != "" && error){
+
+                    mail.push(choice);
  
                     //recupére la balise ul et crée la li
                     let list = document.getElementById(liste);

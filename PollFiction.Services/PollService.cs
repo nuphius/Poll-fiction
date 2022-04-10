@@ -51,6 +51,7 @@ namespace PollFiction.Services
             var polls = await _ctx.Polls
                                 .Include(p=>p.PollGuests)
                                 .Include(p=>p.Choices)
+                                .OrderByDescending(p=>p.Polldate)
                                 .ToListAsync();
 
             DashboardViewModel model = new DashboardViewModel();
@@ -245,7 +246,7 @@ namespace PollFiction.Services
                     else
                     {
                         await DisablePollAsync(poll);
-                        return (poll, null, 0);      
+                        return (poll, "disable", 0);      
                     }
 
                 }
@@ -270,7 +271,7 @@ namespace PollFiction.Services
                 }).ToListAsync();
         }
 
-        public async Task SaveChoiceVoteAsync(VotePollViewModel votePoll)
+        public async Task<string> SaveChoiceVoteAsync(VotePollViewModel votePoll)
         {
             var choices = _ctx.Choices
                             .Include(p => p.GuestChoices)
@@ -335,6 +336,8 @@ namespace PollFiction.Services
             }
 
             await _ctx.SaveChangesAsync();
+
+            return await _ctx.Polls.Where(x => x.PollId.Equals(votePoll.PollId)).Select(x => x.PollLinkStat).FirstOrDefaultAsync();
         }
 
         public async Task<LinksPollViewModel> DisplayLinksPollAsync(int pollid)
