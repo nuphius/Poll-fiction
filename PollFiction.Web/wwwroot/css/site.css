@@ -159,6 +159,14 @@ h1{
     width: auto;
     margin: 0 5px 0 5px;
 }
+
+.div-form-search{
+    text-align:center;
+}
+
+.div-form-search input{
+    line-height: 30px;
+}
 /* Fin CSS personnalisé de PollFiction !!!!!!*/
 a.navbar-brand {
     white-space: normal;

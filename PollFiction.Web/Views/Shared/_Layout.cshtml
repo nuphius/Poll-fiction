@@ -18,12 +18,15 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-@*                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>*@
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Poll" asp-action="CreatePoll">Créer un sondage</a>
-                        </li>
+                        @{
+                            if(User.Claims.FirstOrDefault(u => u.Type.Equals("name")) != null)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Poll" asp-action="CreatePoll">Créer un sondage</a>
+                                </li>
+                            }
+                        }
+                        
                     </ul>
                     @if(User.Claims.FirstOrDefault(u => u.Type.Equals("name")) != null)
                     {
@@ -45,9 +48,12 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - PollFiction - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+        <form asp-action="vote" method="get" class="form1" asp-controller="Poll">
+            <div class="div-form-search">
+                <input type="text" name="code" class="searchPoll" placeholder="Saisiez un code de sondage" />
+                <input type="submit" value="Rechercher" class="btn btn-primary" />
+            </div>
+        </form>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

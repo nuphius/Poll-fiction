@@ -30,10 +30,13 @@ namespace PollFiction.Web.Controllers
         {
             DashboardViewModel model = await _pollService.LoadDashboardAsync();
 
+            if (!string.IsNullOrEmpty(error))
+                model.Error=error;
+
             return View(model);
         }
 
-        [HttpGet]
+        [Authorize,HttpGet]
         public IActionResult CreatePoll()
         {
             return View();
@@ -71,7 +74,7 @@ namespace PollFiction.Web.Controllers
             if (model != null)
                 return View(model);
             else
-                return View(nameof(Dashboard), "Vous n'étes pas le créateur de ce sondage !");
+                return RedirectToAction(nameof(Dashboard), new {error = "Vous n'étes pas le créateur de ce sondage !" });
         }
 
         [Authorize, HttpPost]
@@ -106,8 +109,8 @@ namespace PollFiction.Web.Controllers
             }
             else if (view == null)
             {
-
-                return RedirectToAction(nameof(Dashboard));
+                //message Erreur si le code du sondage est faux ou que la personne n'est pas invité
+                return RedirectToAction(nameof(Dashboard), new { error = "Merci de vérifier votre code sondage !" });
             } 
             else
                 return View(nameof(Error));
@@ -119,7 +122,7 @@ namespace PollFiction.Web.Controllers
 
             _pollService.SaveChoiceVoteAsync(model);
 
-            return RedirectToAction(nameof(Dashboard));
+            return RedirectToAction(nameof(Stats), new { codeStat = model.Poll.PollLinkStat} );
         }
 
         public async Task<IActionResult> Stats(string codeStat)

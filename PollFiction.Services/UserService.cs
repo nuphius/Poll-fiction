@@ -54,7 +54,7 @@ namespace PollFiction.Services
             {
                 var claims = new List<Claim>
                 {
-                    new Claim("pseudo", user.UserName),
+                    //new Claim("pseudo", user.UserName),
                     new Claim("name", user.UserName),
                     new Claim("id", user.UserId.ToString())
                 };

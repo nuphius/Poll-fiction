@@ -8,25 +8,29 @@
 
 <hr />
 <div class="container">
-    <div class="container-form">
+
+    @{
+        if (!string.IsNullOrEmpty(Model.Error)){
+                <div class="container-form">
+                    <div class="error text-center">
+                        @Model.Error
+                    </div>
+                </div>
+            }
+    }
+
+@*    <div class="container-form">
         <form action="vote" method="get" class="form1">
             <div>
                 <input type="text" name="code" class="searchPoll" placeholder="Saisiez un code de sondage" />
                 <input type="submit" value="Rechercher" class="btn btn-primary" />
             </div>
         </form>
-    </div>
+    </div>*@
     <div class="container-form">
         <h4>Vos sondage crées</h4>
         
         @{
-
-            if (!string.IsNullOrEmpty(Model.Error)){
-                <div>
-                    @Model.Error
-                </div>
-            }
-
             foreach(var poll in Model.listPollViewModels)
             {
                 @if (poll.PollCreator != null)
@@ -81,7 +85,7 @@
         }
     </div>
     <div class="container-form">
-        <h4>Vos sondage invités</h4>
+        <h4>Vos invitations aux sondages</h4>
         
         @{
             foreach(var poll in Model.listPollViewModels)
