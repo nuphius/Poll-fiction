@@ -18,7 +18,7 @@
             }
     }
     <div class="container-form">
-        <h4>Vos sondage crées</h4>
+        <h4>Vos sondages crées</h4>
         
         @{
             foreach(var poll in Model.listPollViewModels)
@@ -45,7 +45,7 @@
                             } 
                         </span>
                         <span class="small font-weight-bold" style="margin-right:15px;">
-                            @poll.PollCreator.Polldate.ToString("dd/MM/yy") 
+                             Créé : @poll.PollCreator.Polldate.ToString("dd/MM/yy") 
                         </span>
                         <div class="dashbord-image">
                             @if (!poll.PollCreator.PollDisable)
@@ -59,9 +59,15 @@
                                 </a>
 
 
-                                <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkDisable" title="Désactiver la sondage">
+                                <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkDisable" title="Désactiver la sondage" onclick="Confirm()">
                                     <img src="~/images/close60.png" alt="Désactiver le sonf" class="img-list-poll-dashbord">
                                 </a>
+                            }
+                            else
+                            {
+                                <span class="font-weight-bold">
+                                    clôturé
+                                </span>
                             }
 
                             <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkStat" title="Visualiser les résultats">
@@ -101,14 +107,14 @@
                             } 
                         </span>
                         <span class="small font-weight-bold" style="margin-right:15px;">
-                            @poll.PollGuest.Polldate.ToString("dd/MM/yy") 
+                           Créé : @poll.PollGuest.Polldate.ToString("dd/MM/yy") 
                         </span>
                         <div class="dashbord-image">
                             @if (!poll.PollGuest.PollDisable)
                             {
-                                <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkAccess" title="voter">
-                                    <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
-                                </a>
+                                    <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkAccess" title="voter">
+                                        <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
+                                    </a> 
                             }
 
                             <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkStat" title="Visualiser les résultats">
@@ -121,3 +127,19 @@
         }
     </div>
 </div>
+@section Scripts {
+    <script>
+
+        function Confirm(){
+            resultat = window.confirm("Etes-vous sûr de vouloir clôturer le sondage ?", );
+
+            if(resultat){
+                return true;
+            }
+            else{
+                console.log("descativé");
+                this.event.returnValue = false;
+            }
+        }
+    </script>
+}

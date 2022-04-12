@@ -42,8 +42,7 @@ namespace PollFiction.Web.Controllers
             return View();
         }
 
-        [Authorize]
-        [HttpPost]
+        [Authorize,HttpPost]
         public async Task<IActionResult> CreatePoll(CreatePollViewModel model)
         {
             //bool rst = await _pollService.SaveCreatePollAsync(model);
@@ -81,10 +80,10 @@ namespace PollFiction.Web.Controllers
         {
             _pollService.SaveGuestPollAsync(model);
 
-            return RedirectToAction(nameof(Dashboard));
+            return RedirectToAction(nameof(Dashboard), new { error = "Votre sondage est créé, invitations envoyées"});
         }
 
-        [Authorize, HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Vote(string code)
         {
             (Poll poll, string view, int guestId) = await _pollService.SearchPollByCodeAsync(code);

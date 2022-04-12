@@ -30,7 +30,7 @@
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Créer" class="btn btn-primary" />
+                <input type="submit" value="Créer" class="btn btn-primary" onclick="Confirm()" />
             </div>
             <hr>
             <div>
@@ -58,6 +58,24 @@
     }
     <script>
            let count = 1;
+
+           function Confirm(){
+
+               if(document.getElementById('ListChoice').childElementCount > 1){
+
+                   resultat = window.confirm("Voulez-vous confirmer la fin de création du sondage ?", );
+
+                    if(resultat){
+                        return true;
+                    }
+               }
+               else{
+                   alert("Veuillez saisir des choix (au moins deux)")
+               }
+
+                console.log("descativé");
+                this.event.returnValue = false;
+            }
 
            function DelChoice(nbr) {
 

@@ -93,13 +93,16 @@ h1{
 .searchPoll {
     display:inline-block;
     vertical-align:middle;
-    width: 55%;
+    width: 75%;
     padding: .375rem .75rem;
     color: #495057;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
+}
+.searchPollFooter {
+    width: 55%;
 }
 
 #ListChoice, #ListGuest {
@@ -166,6 +169,11 @@ h1{
 
 .div-form-search input{
     line-height: 30px;
+}
+
+.nav-img{
+    height:30px;
+    width:auto;
 }
 /* Fin CSS personnalisé de PollFiction !!!!!!*/
 a.navbar-brand {

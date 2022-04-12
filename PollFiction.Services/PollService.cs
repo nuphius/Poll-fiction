@@ -82,7 +82,6 @@ namespace PollFiction.Services
             }
 
             return model;
-            //return polls;
         }
         #endregion
 
@@ -145,62 +144,43 @@ namespace PollFiction.Services
         #region SaveGuestPollAsync
         public async Task SaveGuestPollAsync(LinksPollViewModel mailGuest)
         {
-            //invitation du créateur du sondage afin qu'il puisse voter
-            //mailGuest.GuestMails.Add(_user.UserMail);
-
-            //Guest issetMailInBdd = new Guest();
-
-            //foreach (var mail in mailGuest.GuestMails)
-            //{
-            //   var mailInBdd = _ctx.Guests.FirstOrDefault<Guest>(g => g.GuestMail == mail);
-
-            //    PollGuest pollGuest = new PollGuest
-            //    {
-            //        PollId = mailGuest.PollId,
-            //        Guest = new Guest
-            //        {
-            //            GuestMail = mail
-            //        }
-            //    };
-
-            //    await _ctx.AddAsync(pollGuest);
-            //}
-
-            //await _ctx.SaveChangesAsync();
 
             //invitation du créateur du sondage afin qu'il puisse voter
-            mailGuest.GuestMails.Add(_user.UserMail);
-
-            // List<PollGuest> pollGuests = new List<PollGuest>();
-            Guest issetMailInBdd;
-
-            foreach (var mail in mailGuest.GuestMails)
+            if(mailGuest.GuestMails != null)
             {
-                issetMailInBdd = _ctx.Guests.FirstOrDefault<Guest>(g => g.GuestMail.Equals(mail));
+                mailGuest.GuestMails.Add(_user.UserMail);
 
-                if (issetMailInBdd == null)
+                // List<PollGuest> pollGuests = new List<PollGuest>();
+                Guest issetMailInBdd;
+
+                foreach (var mail in mailGuest.GuestMails)
                 {
-                    PollGuest pollGuest = new PollGuest
+                    issetMailInBdd = _ctx.Guests.FirstOrDefault<Guest>(g => g.GuestMail.Equals(mail));
+
+                    if (issetMailInBdd == null)
                     {
-                        PollId = mailGuest.PollId,
-                        Guest = new Guest
+                        PollGuest pollGuest = new PollGuest
                         {
-                            GuestMail = mail
-                        }
-                    };
-                    _ctx.Add(pollGuest);
-                }
-                else
-                {
-                    PollGuest pollGuest = new PollGuest
+                            PollId = mailGuest.PollId,
+                            Guest = new Guest
+                            {
+                                GuestMail = mail
+                            }
+                        };
+                        _ctx.Add(pollGuest);
+                    }
+                    else
                     {
-                        PollId = mailGuest.PollId,
-                        GuestId = issetMailInBdd.GuestId
-                    };
-                    await _ctx.AddAsync(pollGuest);
+                        PollGuest pollGuest = new PollGuest
+                        {
+                            PollId = mailGuest.PollId,
+                            GuestId = issetMailInBdd.GuestId
+                        };
+                        await _ctx.AddAsync(pollGuest);
+                    }
                 }
-            }
-            await _ctx.SaveChangesAsync();
+                await _ctx.SaveChangesAsync();
+            }   
         }
         #endregion
 
@@ -227,10 +207,17 @@ namespace PollFiction.Services
 
 
             //on verifie que l'utilisateur  est un GuestId
+            if (_httpContext.User.Claims.FirstOrDefault(u => u.Type.Equals("name")) == null)
+            {
+                return (null, null, 0);
+            }
+
             var guestId = await _ctx.Guests
-                    .Where(u => u.GuestMail.Equals(_user.UserMail))
-                    .Select(u => u.GuestId)
-                    .FirstOrDefaultAsync();
+                .Where(u => u.GuestMail.Equals(_user.UserMail))
+                .Select(u => u.GuestId)
+                .FirstOrDefaultAsync();
+
+            
 
             //on verifie que le Guest soit invité a ce sondage
             if (guestId != 0 && !poll.PollDisable)

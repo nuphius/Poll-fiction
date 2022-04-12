@@ -20,22 +20,32 @@
                         <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PollFiction</a>
                     }
                 }
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <div>
+
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                    </div>
+                    
+                    
+
+                    <div>
                         @{
                             if(User.Claims.FirstOrDefault(u => u.Type.Equals("name")) != null)
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Poll" asp-action="CreatePoll">Créer un sondage</a>
-                                </li>
-                            }
+                                
+                                <a class="nav-link font-weight-bold" asp-area="" asp-controller="Poll" asp-action="CreatePoll">
+                                    <img class="nav-img" src="~/images/plus-64.png" alt="Ajouter un sondage" />
+                                    Créer un sondage
+                                </a>
+                            }       
                         }
-                        
-                    </ul>
+                    </div>
+
                     @if(User.Claims.FirstOrDefault(u => u.Type.Equals("name")) != null)
                     {
                         <div class="deco-lien">
@@ -58,7 +68,7 @@
     <footer class="border-top footer text-muted">
         <form asp-action="vote" method="get" class="form1" asp-controller="Poll">
             <div class="div-form-search">
-                <input type="text" name="code" class="searchPoll" placeholder="Saisiez un code de sondage" />
+                <input type="text" name="code" class="searchPoll searchPollFooter" placeholder="Saisiez un code de sondage" />
                 <input type="submit" value="Rechercher" class="btn btn-primary" />
             </div>
         </form>
