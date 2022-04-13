@@ -5,7 +5,7 @@
     ViewData["Title"] = "Vote au sondage " + Model.Poll.PollTitle;
 }
 
-<h4>@Model.Poll.PollTitle</h4>
+<h4>@Model.Poll.PollTitle - <span class="bleu-bouton">Créé par : @Model.Poll.User.UserName</span></h4>
 <hr />
 <div class="container">
     <div class="container-form">
@@ -22,7 +22,7 @@
                     {
                         GuestId = b.GuestId,
                     }).ToList().GroupBy(x=>x.GuestId).Count()
-            @*.GuestChoices.GroupBy(x => x.GuestId).Count()*@
+            sur @Model.Poll.PollGuests.Where(x=>x.PollId.Equals(Model.Poll.PollId)).ToList().GroupBy(x=>x.GuestId).Count() invités
             </p>
 
             @{
@@ -54,9 +54,14 @@
                         <br />
                     }
                 }
+                TempData["poll"] = @Model.Poll.PollId;
+                TempData["guestId"] = @Model.GuestId;
             }
-            <input type="hidden" name="PollId" value="@Model.Poll.PollId" />
-            <input type="hidden" name="GuestId" value="@Model.GuestId" />
+
+            
+
+@*            <input type="hidden" name="PollId" value="@Model.Poll.PollId" />
+            <input type="hidden" name="GuestId" value="@Model.GuestId" />*@
             <div class="form-group">
                 <input type="submit" value="Voter !" class="btn btn-primary" />
             </div>

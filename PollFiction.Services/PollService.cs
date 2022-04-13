@@ -49,9 +49,9 @@ namespace PollFiction.Services
                                            .FirstOrDefaultAsync();
 
             var polls = await _ctx.Polls
-                                .Include(p=>p.PollGuests)
-                                .Include(p=>p.Choices)
-                                .OrderByDescending(p=>p.Polldate)
+                                .Include(p => p.PollGuests)
+                                .Include(p => p.Choices)
+                                .OrderByDescending(p => p.Polldate)
                                 .ToListAsync();
 
             DashboardViewModel model = new DashboardViewModel();
@@ -74,7 +74,7 @@ namespace PollFiction.Services
                 {
                     PollCreator = poll.UserId == _userId ? poll : null,
                     PollCreatorVote = voted,
-                    PollGuest = poll.PollGuests.FirstOrDefault(x => x.GuestId.Equals(guestId)) != null && poll.UserId != _userId  ? poll : null,
+                    PollGuest = poll.PollGuests.FirstOrDefault(x => x.GuestId.Equals(guestId)) != null && poll.UserId != _userId ? poll : null,
                     PollGuestVote = voted
                 };
 
@@ -146,7 +146,7 @@ namespace PollFiction.Services
         {
 
             //invitation du créateur du sondage afin qu'il puisse voter
-            if(mailGuest.GuestMails != null)
+            if (mailGuest.GuestMails != null)
             {
                 mailGuest.GuestMails.Add(_user.UserMail);
 
@@ -180,7 +180,7 @@ namespace PollFiction.Services
                     }
                 }
                 await _ctx.SaveChangesAsync();
-            }   
+            }
         }
         #endregion
 
@@ -190,6 +190,8 @@ namespace PollFiction.Services
             Poll poll = await _ctx.Polls
                                 .Include(p => p.Choices)
                                 .ThenInclude(c => c.GuestChoices)
+                                .Include(p => p.User)
+                                .Include(p => p.PollGuests)
                                 .Where(p => p.PollLinkAccess.Equals(code) ||
                                               p.PollLinkDisable.Equals(code) ||
                                               p.PollLinkStat.Equals(code)).FirstOrDefaultAsync();
@@ -217,7 +219,7 @@ namespace PollFiction.Services
                 .Select(u => u.GuestId)
                 .FirstOrDefaultAsync();
 
-            
+
 
             //on verifie que le Guest soit invité a ce sondage
             if (guestId != 0 && !poll.PollDisable)
@@ -233,7 +235,7 @@ namespace PollFiction.Services
                     else
                     {
                         await DisablePollAsync(poll);
-                        return (poll, "disable", 0);      
+                        return (poll, "disable", 0);
                     }
 
                 }
@@ -299,7 +301,7 @@ namespace PollFiction.Services
             }
             else
             {
-                if (votePoll.CheckChoice != null) 
+                if (votePoll.CheckChoice != null)
                 {
                     foreach (var item in votePoll.CheckChoice)
                     {
@@ -354,6 +356,8 @@ namespace PollFiction.Services
             var stat = await _ctx.Polls
                             .Include(p => p.Choices)
                             .ThenInclude(c => c.GuestChoices)
+                            .Include(p => p.PollGuests)
+                            .Include(p => p.User)
                             .Where(p => p.PollLinkStat == code)
                             .FirstOrDefaultAsync();
 
@@ -374,7 +378,7 @@ namespace PollFiction.Services
 
                 List<StatChoice> tempStat = new List<StatChoice>();
 
-                foreach(var choice in stat.Choices)
+                foreach (var choice in stat.Choices)
                 {
                     StatChoice statChoice = new StatChoice
                     {

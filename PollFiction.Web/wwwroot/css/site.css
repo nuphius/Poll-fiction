@@ -142,6 +142,10 @@ h1{
     opacity: 1;
 }
 
+.bleu-bouton {
+    color: #0366d6;
+}
+
 .vert{
     color:forestgreen;
     font-weight:bold;

@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Résultat du sondage - " + @Model.Poll.PollTitle;
 }
-<h4>Résultat - @Model.Poll.PollTitle</h4>
+<h4>Résultat - @Model.Poll.PollTitle - <span class="bleu-bouton">Créé par : @Model.Poll.User.UserName</span></h4>
 <hr />
 <div class="container">
     <div class="container-form">
@@ -14,8 +14,14 @@
     </div>
     <div class="container-form">
 
+        @{
+            double votant = Model.GuestChoices.GroupBy(x => x.GuestId).Count();
+            double nbGuest = Model.Poll.PollGuests.Where(x => x.PollId.Equals(Model.Poll.PollId)).ToList().GroupBy(x => x.GuestId).Count();
+            double taux = (votant/nbGuest) * 100;
+        }
+
         <p>
-            Nombre de votant : @Model.GuestChoices.GroupBy(x => x.GuestId).Count()
+            Nombre de votant : @votant sur @nbGuest invités. Taux de participation : @String.Format("{0:0.##}",@taux) %;
         </p>
 
         <ol>

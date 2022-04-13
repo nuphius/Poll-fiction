@@ -6,6 +6,7 @@ using PollFiction.Data.Model;
 using PollFiction.Services.Interfaces;
 using PollFiction.Services.Models;
 using PollFiction.Web.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -121,6 +122,10 @@ namespace PollFiction.Web.Controllers
         [Authorize, HttpPost]
         public async Task<IActionResult> Vote(VotePollViewModel model)
         {
+            if (TempData.ContainsKey("poll"))
+                model.PollId = Convert.ToInt32(TempData["poll"]);
+            if (TempData.ContainsKey("guestId"))
+                model.GuestId = Convert.ToInt32(TempData["guestId"].ToString());
 
             var link = await _pollService.SaveChoiceVoteAsync(model);
 
