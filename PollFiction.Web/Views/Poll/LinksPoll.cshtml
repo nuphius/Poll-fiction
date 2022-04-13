@@ -9,6 +9,7 @@
 <hr />
 <div class="container">
     <div class="container-form">
+        
         <form asp-action="LinksPoll" class="form2" id="FormGuest">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group"> 
@@ -32,6 +33,9 @@
                 <input type="button" value="Copier" onclick="copie('desabled')" />
                 <span id="desabledSpan" class="vert"></span>
                 <span asp-validation-for="LinkDelete" class="text-danger"></span>
+            </div>
+            <div class="error font-weight-bold">
+                Attention à ne pas diffuser le lien de désactivation !
             </div>
             <div class="form-group">
                 <label asp-for="GuestMail" class="control-label"></label>

@@ -33,6 +33,13 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Dashboard">Revenir au tableau de bord</a>
-</div>
+@{
+    if (User.Claims.FirstOrDefault(u => u.Type.Equals("name")) != null)
+    {
+        <div>
+            <a asp-action="Dashboard">Revenir au tableau de bord</a>
+        </div>
+    }
+}
+
+
