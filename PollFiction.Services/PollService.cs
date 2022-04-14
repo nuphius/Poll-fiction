@@ -9,6 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Net;
+using System.Net.Mail;
+using System.Diagnostics;
 
 namespace PollFiction.Services
 {
@@ -144,39 +148,76 @@ namespace PollFiction.Services
         #region SaveGuestPollAsync
         public async Task SaveGuestPollAsync(LinksPollViewModel mailGuest)
         {
+            List<Guest> guests = _ctx.Guests.Select(x => new Guest
+            {
+                GuestId = x.GuestId,
+                GuestMail = x.GuestMail
+            }).ToList();
 
+            Guest issetMailInBdd;
             //invitation du créateur du sondage afin qu'il puisse voter
             if (mailGuest.GuestMails != null)
             {
                 mailGuest.GuestMails.Add(_user.UserMail);
 
                 // List<PollGuest> pollGuests = new List<PollGuest>();
-                Guest issetMailInBdd;
 
                 foreach (var mail in mailGuest.GuestMails)
                 {
-                    issetMailInBdd = _ctx.Guests.FirstOrDefault<Guest>(g => g.GuestMail.Equals(mail));
+                    //issetMailInBdd = _ctx.Guests.FirstOrDefault<Guest>(g => g.GuestMail.Equals(mail));
+                    issetMailInBdd = guests.Where(x => x.GuestMail.Equals(mail)).FirstOrDefault();
+
 
                     if (issetMailInBdd == null)
                     {
-                        PollGuest pollGuest = new PollGuest
+                        _ctx.Add(new PollGuest
                         {
                             PollId = mailGuest.PollId,
                             Guest = new Guest
                             {
                                 GuestMail = mail
                             }
-                        };
-                        _ctx.Add(pollGuest);
+                        });
+                        //_ctx.Add(pollGuest);
+                        //await _ctx.SaveChangesAsync();
+
+                        string linkPoll = _ctx.Polls.Where(x => x.PollId.Equals(mailGuest.PollId)).Select(y => y.PollLinkAccess).FirstOrDefault();
+
+                        string to = mail; //To address    
+                        string from = "alsc-adaitp21-bmi@ccicampus.fr"; //From address    
+                        MailMessage message = new MailMessage(from, to);
+
+                        string mailbody = "Merci de participer au sondage bande de noob !!!!!\n lien du sondage :" +
+                            "<a href=\"https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + linkPoll + "\" title=\"Aller au sonadge\"/> " +
+                            "https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + linkPoll + " </a> " +
+                            "<p>Pour accéder au sondage vous devez avoir un compte créé avec le mail : " + mail + "</p>";
+                        message.Subject = "BRAVO ! Vous venez d'être invité a un sondage";
+                        message.Body = mailbody;
+                        message.BodyEncoding = Encoding.UTF8;
+                        message.IsBodyHtml = true;
+                        SmtpClient client = new SmtpClient("smtp.office365.com", 587); //Gmail smtp    
+                        System.Net.NetworkCredential basicCredential1 = new
+                        System.Net.NetworkCredential("alsc-adaitp21-bmi@ccicampus.fr", "Irzv4885");
+                        client.EnableSsl = true;
+                        client.UseDefaultCredentials = false;
+                        client.Credentials = basicCredential1;
+                        try
+                        {
+                            client.Send(message);
+                        }
+
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex.Message);
+                        }
                     }
                     else
                     {
-                        PollGuest pollGuest = new PollGuest
+                        await _ctx.AddAsync(new PollGuest
                         {
                             PollId = mailGuest.PollId,
                             GuestId = issetMailInBdd.GuestId
-                        };
-                        await _ctx.AddAsync(pollGuest);
+                        });
                     }
                 }
                 await _ctx.SaveChangesAsync();

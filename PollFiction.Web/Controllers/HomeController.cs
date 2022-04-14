@@ -30,9 +30,14 @@ namespace PollFiction.Web.Controllers
             return View();
         }
 
-        public IActionResult Register()
+        [HttpGet]
+        public IActionResult Register(string returnUrl)
         {
             RegisterViewModel model = new RegisterViewModel();
+
+            if (returnUrl != null)
+                model.returnUrl = returnUrl;
+
             model.Error = "";
             return View(model);
         }
@@ -44,7 +49,7 @@ namespace PollFiction.Web.Controllers
 
             if (String.IsNullOrEmpty(rst))
             {
-                return RedirectToAction(nameof(Login));
+                return RedirectToAction(nameof(Login), new { returnUrl = model.returnUrl});
             }
             else
             {
@@ -75,7 +80,7 @@ namespace PollFiction.Web.Controllers
                 }
                 else
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Dashboard), "Poll");
                 }
             }
             else

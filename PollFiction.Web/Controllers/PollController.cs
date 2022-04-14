@@ -84,7 +84,7 @@ namespace PollFiction.Web.Controllers
             return RedirectToAction(nameof(Dashboard), new { error = "Votre sondage est créé, invitations envoyées"});
         }
 
-        [HttpGet]
+        [Authorize, HttpGet]
         public async Task<IActionResult> Vote(string code)
         {
             (Poll poll, string view, int guestId) = await _pollService.SearchPollByCodeAsync(code);
@@ -101,7 +101,7 @@ namespace PollFiction.Web.Controllers
 
                 if (view == "Stats")
                 {
-                    return RedirectToAction(nameof(Stats), new { codeStat = code });
+                    return RedirectToAction(nameof(Stats), new { codeStat = code }); 
                 }
                 else if(view == "disable")
                 {
@@ -113,7 +113,8 @@ namespace PollFiction.Web.Controllers
             else if (view == null)
             {
                 //message Erreur si le code du sondage est faux ou que la personne n'est pas invité
-                return RedirectToAction(nameof(Dashboard), new { error = "Merci de vérifier votre code sondage !" });
+
+                    return RedirectToAction(nameof(Dashboard), new { error = "Merci de vérifier votre code sondage !" }); 
             } 
             else
                 return View(nameof(Error));

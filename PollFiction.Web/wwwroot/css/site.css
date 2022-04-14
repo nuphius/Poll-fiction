@@ -98,8 +98,9 @@ h1{
     color: #495057;
     background-color: #fff;
     background-clip: padding-box;
-    border: 1px solid #ced4da;
+    border: 2px solid #ced4da;
     border-radius: .25rem;
+    border-color : dodgerblue;
 }
 .searchPollFooter {
     width: 55%;

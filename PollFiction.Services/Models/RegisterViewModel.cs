@@ -11,7 +11,7 @@ namespace PollFiction.Services.Models
         [Required(ErrorMessage = "L'adresse mail est obligatoire !")]
         [DataType(DataType.EmailAddress)]
         [Display(Name ="Adresse Mail")]
-        [RegularExpression(@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$", ErrorMessage ="L'E-mail saisie n'est pas valide")]
+        [RegularExpression(@"^([\w-\.\-]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$", ErrorMessage ="L'E-mail saisie n'est pas valide")]
         public string Mail { get; set; }
         [Required(ErrorMessage = "Le mot de passe est obligatoire !")]
         [DataType(DataType.Password)]
@@ -24,6 +24,9 @@ namespace PollFiction.Services.Models
         [Display (Name ="Confirmation du mot de passe")]
         [DataType (DataType.Password)]
         public string ConfirmPwd { get; set; }
+
+        public string returnUrl { get; set; }
+
         public string Error { get; set; }
     }
 }

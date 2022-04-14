@@ -18,7 +18,7 @@ namespace PollFiction.Services.Models
         public string LinkDelete { get; set; }
         [DataType(DataType.EmailAddress)]
         [Display(Name = "Adresse Mail")]
-        [RegularExpression(@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$", ErrorMessage = "L'E-mail saisie n'est pas valide")]
+        [RegularExpression(@"^([\w-\.\-]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$", ErrorMessage = "L'E-mail saisie n'est pas valide")]
         public string GuestMail { get; set; }
         public List<string> GuestMails { get; set; }
 

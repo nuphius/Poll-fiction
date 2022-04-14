@@ -40,6 +40,13 @@
                 <input type="submit" class="btn btn-primary" />
             </div>
 
+            @{
+                if (!string.IsNullOrWhiteSpace(Model.returnUrl))
+                {
+                    <input type="hidden" value="@Model.returnUrl" name="returnUrl" />
+                }
+            }
+
             @if(!string.IsNullOrEmpty(@Model.Error))
             {
                 <div class="error">

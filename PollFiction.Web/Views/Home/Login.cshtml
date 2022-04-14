@@ -36,6 +36,10 @@
                 <input type="submit" value="Identifier" class="btn btn-primary" />
             </div>
 
+            <p>
+                Pas de compte ? <a href="/Home/Register?ReturnUrl=@Model.ReturnUrl" title="Créer un compte">Créer un compte</a>
+            </p>
+
             @if(!string.IsNullOrEmpty(@Model.Error))
             {
                 <div class="error">

@@ -79,13 +79,13 @@
             }
         }
     </div>
-    <div class="container-form">
-        <h4>Vos invitations aux sondages</h4>
+     <div class="container-form">
+        <h4>Vos participations aux sondages invités</h4>
         
         @{
             foreach(var poll in Model.listPollViewModels)
             {
-                @if (poll.PollGuest != null)
+                @if (poll.PollGuest != null && poll.PollGuestVote != "")
                 {
                     <div class="container-lien-poll">
                         @if (!poll.PollGuest.PollDisable)
@@ -101,10 +101,52 @@
                             </span>
                         }
                         <span class="vert vote">
-                            @if (poll.PollGuestVote != "")
+                            @poll.PollGuestVote
+                        </span>
+                        <span class="small font-weight-bold" style="margin-right:15px;">
+                           Créé : @poll.PollGuest.Polldate.ToString("dd/MM/yy") 
+                        </span>
+                        <div class="dashbord-image">
+                            @if (!poll.PollGuest.PollDisable)
                             {
-                                @poll.PollGuestVote
-                            } 
+                                    <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkAccess" title="voter">
+                                        <img src="~/images/vote64.png" alt="Motifier le sondage" class="img-list-poll-dashbord">
+                                    </a> 
+                            }
+
+                            <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkStat" title="Visualiser les résultats">
+                                <img src="~/images/combine48.png" alt="Visualiser les résultats" class="img-list-poll-dashbord">
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+
+    <div class="container-form">
+        <h4>Vos invitations aux sondages</h4>
+        
+        @{
+            foreach(var poll in Model.listPollViewModels)
+            {
+                @if (poll.PollGuest != null && poll.PollGuestVote == "")
+                {
+                    <div class="container-lien-poll">
+                        @if (!poll.PollGuest.PollDisable)
+                        {
+                            <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkAccess" class="lien-sondage" title="">
+                                @poll.PollGuest.PollTitle
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="lien-sondage lien-sondage-disable">
+                                @poll.PollGuest.PollTitle
+                            </span>
+                        }
+                        <span class="vert vote">
+
                         </span>
                         <span class="small font-weight-bold" style="margin-right:15px;">
                            Créé : @poll.PollGuest.Polldate.ToString("dd/MM/yy") 
