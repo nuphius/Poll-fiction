@@ -29,8 +29,10 @@ namespace PollFiction.Services
             _ctx = ctx;
             _httpContext = contextAccessor.HttpContext;
 
+            //récupération de l'id user dans le cookie
             var idCookie = _httpContext.User.Claims.FirstOrDefault(u => u.Type.Equals("id"));
 
+            //récupération des infos user dans l'instance pour y avoir accès de partout
             if (idCookie != null)
             {
                 _userId = Convert.ToInt32(idCookie.Value);
@@ -40,7 +42,7 @@ namespace PollFiction.Services
         }
 
         /// <summary>
-        /// Chargement de infos des sondage pour le tableau de bord
+        /// Chargement de infos des sondages pour le tableau de bord
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="contextAccessor"></param>
@@ -52,12 +54,14 @@ namespace PollFiction.Services
                                            .Select(g => g.GuestId)
                                            .FirstOrDefaultAsync();
 
+            //récupère le poll avec les données liées des autres table, puis trie par date
             var polls = await _ctx.Polls
                                 .Include(p => p.PollGuests)
                                 .Include(p => p.Choices)
                                 .OrderByDescending(p => p.Polldate)
                                 .ToListAsync();
 
+            //création des infos pour la vue
             DashboardViewModel model = new DashboardViewModel();
 
             foreach (var poll in polls)
@@ -69,11 +73,13 @@ namespace PollFiction.Services
                                 .Where(x => x.GuestChoices.Any(y => y.GuestId == guestId) && x.PollId == poll.PollId)
                                 .ToList();
 
+                //regarde si il a déjà voté
                 if (pollVote.Count != 0)
                 {
                     voted = "(voté !)";
                 }
 
+                //création des polls en fonction de si il est créateur ou non
                 ListPollViewModel pollForDashboard = new ListPollViewModel
                 {
                     PollCreator = poll.UserId == _userId ? poll : null,
@@ -82,6 +88,7 @@ namespace PollFiction.Services
                     PollGuestVote = voted
                 };
 
+                //Ajoute dans la viewModel
                 model.listPollViewModels.Add(pollForDashboard);
             }
 
@@ -90,7 +97,7 @@ namespace PollFiction.Services
         #endregion
 
         /// <summary>
-        /// Enregristement de sondage crée dans la BDD
+        /// Enregristement de sondage crée dans la BDD et de GUID
         /// </summary>
         /// <param name="poll"></param>
         /// <returns></returns>
@@ -116,26 +123,9 @@ namespace PollFiction.Services
                 }).ToList()
             };
 
+            //ajout et sauvegarde dans la BDD du poll crée ci-dessus
             await _ctx.AddAsync(pollDb);
             await _ctx.SaveChangesAsync();
-
-            //List<Choice> listChoices = new List<Choice>();
-
-            //foreach (var item in poll.Choices)
-            //{
-            //    Choice choiceDb = new Choice
-            //    {
-            //        PollId = pollDb.PollId,
-            //        ChoiceText = item, 
-            //        Poll=pollDb
-            //    };
-
-            //    listChoices.Add(choiceDb);
-            //}
-
-            //await _ctx.AddRangeAsync(listChoices);
-            //await _ctx.SaveChangesAsync();
-
             return pollDb;
         }
         #endregion
@@ -148,6 +138,7 @@ namespace PollFiction.Services
         #region SaveGuestPollAsync
         public async Task SaveGuestPollAsync(LinksPollViewModel mailGuest)
         {
+            //récupère tous les Guest existant
             List<Guest> guests = _ctx.Guests.Select(x => new Guest
             {
                 GuestId = x.GuestId,
@@ -163,11 +154,11 @@ namespace PollFiction.Services
                 // List<PollGuest> pollGuests = new List<PollGuest>();
 
                 foreach (var mail in mailGuest.GuestMails)
-                {
-                    //issetMailInBdd = _ctx.Guests.FirstOrDefault<Guest>(g => g.GuestMail.Equals(mail));
+                {   
+                    //verifier si se mail est déja existant dans la table des Guest
                     issetMailInBdd = guests.Where(x => x.GuestMail.Equals(mail)).FirstOrDefault();
 
-
+                    //si existe pas on le crée
                     if (issetMailInBdd == null)
                     {
                         _ctx.Add(new PollGuest
@@ -178,38 +169,11 @@ namespace PollFiction.Services
                                 GuestMail = mail
                             }
                         });
-                        //_ctx.Add(pollGuest);
-                        //await _ctx.SaveChangesAsync();
 
                         string linkPoll = _ctx.Polls.Where(x => x.PollId.Equals(mailGuest.PollId)).Select(y => y.PollLinkAccess).FirstOrDefault();
 
-                        string to = mail; //To address    
-                        string from = "alsc-adaitp21-bmi@ccicampus.fr"; //From address    
-                        MailMessage message = new MailMessage(from, to);
-
-                        string mailbody = "Merci de participer au sondage bande de noob !!!!!\n lien du sondage :" +
-                            "<a href=\"https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + linkPoll + "\" title=\"Aller au sonadge\"/> " +
-                            "https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + linkPoll + " </a> " +
-                            "<p>Pour accéder au sondage vous devez avoir un compte créé avec le mail : " + mail + "</p>";
-                        message.Subject = "BRAVO ! Vous venez d'être invité a un sondage";
-                        message.Body = mailbody;
-                        message.BodyEncoding = Encoding.UTF8;
-                        message.IsBodyHtml = true;
-                        SmtpClient client = new SmtpClient("smtp.office365.com", 587); //Gmail smtp    
-                        System.Net.NetworkCredential basicCredential1 = new
-                        System.Net.NetworkCredential("alsc-adaitp21-bmi@ccicampus.fr", "Irzv4885");
-                        client.EnableSsl = true;
-                        client.UseDefaultCredentials = false;
-                        client.Credentials = basicCredential1;
-                        try
-                        {
-                            client.Send(message);
-                        }
-
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine(ex.Message);
-                        }
+                        //envoi des mails d'invitation
+                        SendMail(linkPoll, mail);
                     }
                     else
                     {
@@ -225,9 +189,15 @@ namespace PollFiction.Services
         }
         #endregion
 
+        /// <summary>
+        /// Récupération du sondage par son code
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        #region SearchPollByCodeAsync
         public async Task<(Poll, string, int)> SearchPollByCodeAsync(string code)
         {
-            //on récupere le Poll qui correspond au code
+            //on récupere le Poll qui correspond au code ainsi que toutes les infos des tables liaisons
             Poll poll = await _ctx.Polls
                                 .Include(p => p.Choices)
                                 .ThenInclude(c => c.GuestChoices)
@@ -236,6 +206,8 @@ namespace PollFiction.Services
                                 .Where(p => p.PollLinkAccess.Equals(code) ||
                                               p.PollLinkDisable.Equals(code) ||
                                               p.PollLinkStat.Equals(code)).FirstOrDefaultAsync();
+
+            //on verifie si c'est un code de stat et si le code existe
             if (poll != null)
             {
                 if (poll.PollLinkStat == code)
@@ -249,12 +221,13 @@ namespace PollFiction.Services
             }
 
 
-            //on verifie que l'utilisateur  est un GuestId
+            //on verifie que la personne soit connecté
             if (_httpContext.User.Claims.FirstOrDefault(u => u.Type.Equals("name")) == null)
             {
                 return (null, null, 0);
             }
 
+            //on verifie que l'utilisateur  est un GuestId
             var guestId = await _ctx.Guests
                 .Where(u => u.GuestMail.Equals(_user.UserMail))
                 .Select(u => u.GuestId)
@@ -286,7 +259,15 @@ namespace PollFiction.Services
             else
                 return (null, null, 0);
         }
+        #endregion
 
+        /// <summary>
+        /// Fonction tous les choix d'un sondage et leurs réponses
+        /// </summary>
+        /// <param name="pollid"></param>
+        /// <param name="guestId"></param>
+        /// <returns></returns>
+        #region SearchChoiceAsync
         public async Task<List<Choice>> SearchChoiceAsync(int pollid, int guestId)
         {
             return await _ctx.Choices
@@ -300,9 +281,18 @@ namespace PollFiction.Services
                     GuestChoices = c.GuestChoices.Where(x => x.GuestId == guestId).ToList()
                 }).ToListAsync();
         }
+        #endregion
 
+
+        /// <summary>
+        /// Fonction de sauvagarde et de mise à jour des votes
+        /// </summary>
+        /// <param name="votePoll"></param>
+        /// <returns></returns>
+        #region SaveChoiceVoteAsync
         public async Task<string> SaveChoiceVoteAsync(VotePollViewModel votePoll)
         {
+            //récupération des choix et vote de la BDD
             var choices = _ctx.Choices
                             .Include(p => p.GuestChoices)
                             .Where(x => x.GuestChoices.Any(y => y.GuestId == votePoll.GuestId) && x.PollId == votePoll.PollId)
@@ -314,9 +304,10 @@ namespace PollFiction.Services
                                 GuestChoices = c.GuestChoices.Where(x => x.GuestId == votePoll.GuestId).ToList()
                             }).ToList();
 
+            //si different de 0 alors on met a jour les votes sinon on enregistre pour la premiere fois
             if (choices.Count != 0)
             {
-
+                //verifie si checkBox ou radioButton
                 if (votePoll.CheckChoice == null)
                 {
                     choices[0].GuestChoices[0].ChoiceId = votePoll.ChoiceId;
@@ -342,6 +333,7 @@ namespace PollFiction.Services
             }
             else
             {
+                //enregistrement si c'est des checkBox
                 if (votePoll.CheckChoice != null)
                 {
                     foreach (var item in votePoll.CheckChoice)
@@ -354,6 +346,7 @@ namespace PollFiction.Services
                         _ctx.Add(newAddVote);
                     }
                 }
+                //enregistrement si c'est des radio
                 else
                 {
                     var newAddVote = new GuestChoice
@@ -365,11 +358,21 @@ namespace PollFiction.Services
                 }
             }
 
+            //save dans la BDD
             await _ctx.SaveChangesAsync();
 
+            //retourne le lien de stat de ce sondage
             return await _ctx.Polls.Where(x => x.PollId.Equals(votePoll.PollId)).Select(x => x.PollLinkStat).FirstOrDefaultAsync();
         }
+        #endregion
 
+
+        /// <summary>
+        /// Fonction pour afficher les liens des sondages
+        /// </summary>
+        /// <param name="pollid"></param>
+        /// <returns></returns>
+        #region DisplayLinksPollAsync
         public async Task<LinksPollViewModel> DisplayLinksPollAsync(int pollid)
         {
             LinksPollViewModel linksPoll = await _ctx.Polls
@@ -383,7 +386,15 @@ namespace PollFiction.Services
                                                }).FirstOrDefaultAsync();
             return linksPoll;
         }
+        #endregion
 
+
+        /// <summary>
+        /// Fonction pour desactiver les sondages
+        /// </summary>
+        /// <param name="poll"></param>
+        /// <returns></returns>
+        #region DisablePollAsync
         public async Task DisablePollAsync(Poll poll)
         {
             poll.PollDisable = true;
@@ -391,9 +402,18 @@ namespace PollFiction.Services
 
             await _ctx.SaveChangesAsync();
         }
+        #endregion
 
+
+        /// <summary>
+        /// Fonction pour afficher les stats du sondage via son code stats
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        #region StatOfPollAsync
         public async Task<StatViewModel> StatOfPollAsync(string code)
         {
+            //récupere toues les infos en fonction du liens
             var stat = await _ctx.Polls
                             .Include(p => p.Choices)
                             .ThenInclude(c => c.GuestChoices)
@@ -402,6 +422,7 @@ namespace PollFiction.Services
                             .Where(p => p.PollLinkStat == code)
                             .FirstOrDefaultAsync();
 
+            //si code existe on construit le ViewModel
             if (stat != null)
             {
                 StatViewModel statViewModel = new StatViewModel
@@ -416,7 +437,7 @@ namespace PollFiction.Services
                     }).ToList()
                 };
 
-
+                //création d'une site des réponses
                 List<StatChoice> tempStat = new List<StatChoice>();
 
                 foreach (var choice in stat.Choices)
@@ -430,6 +451,7 @@ namespace PollFiction.Services
                     tempStat.Add(statChoice);
                 }
 
+                //trie des réponse
                 statViewModel.statChoices = tempStat.OrderByDescending(x => x.ScoreChoice).ToList();
 
                 return statViewModel;
@@ -437,5 +459,46 @@ namespace PollFiction.Services
 
             return null;
         }
+        #endregion
+
+        /// <summary>
+        /// Fonction d'envoi de mail
+        /// </summary>
+        /// <param name="linkPoll"></param>
+        /// <param name="mail"></param>
+        #region SendMail
+        public void SendMail(string linkPoll, string mail)
+        {
+
+            string to = mail; //To address    
+            string from = "alsc-adaitp21-bmi@ccicampus.fr"; //From address    
+            MailMessage message = new MailMessage(from, to);
+
+            string mailbody = "Merci de participer au sondage bande de noob !!!!!\n lien du sondage :" +
+                "<a href=\"https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + linkPoll + "\" title=\"Aller au sonadge\"/> " +
+                "https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + linkPoll + " </a> " +
+                "<p>Pour accéder au sondage vous devez avoir un compte créé avec le mail : " + mail + "</p>";
+            message.Subject = "BRAVO ! Vous venez d'être invité a un sondage";
+            message.Body = mailbody;
+            message.BodyEncoding = Encoding.UTF8;
+            message.IsBodyHtml = true;
+            SmtpClient client = new SmtpClient("smtp.office365.com", 587); //Gmail smtp    
+            System.Net.NetworkCredential basicCredential1 = new
+            System.Net.NetworkCredential("alsc-adaitp21-bmi@ccicampus.fr", "Irzv4885");
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            client.Credentials = basicCredential1;
+
+            try
+            {
+                client.Send(message);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                
+            }
+        }
+        #endregion
     }
 }

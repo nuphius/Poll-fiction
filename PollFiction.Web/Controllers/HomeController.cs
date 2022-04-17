@@ -25,11 +25,21 @@ namespace PollFiction.Web.Controllers
             _pollService = pollService;
         }
 
+        /// <summary>
+        /// affichage page index
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             return View();
         }
 
+
+        /// <summary>
+        /// Affichage de la page register avec memorisation de l'url non autorisé
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Register(string returnUrl)
         {
@@ -42,6 +52,11 @@ namespace PollFiction.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// traitement des données de la page register
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -49,14 +64,22 @@ namespace PollFiction.Web.Controllers
 
             if (String.IsNullOrEmpty(rst))
             {
+                //envoi vers la page login si tout et bon
                 return RedirectToAction(nameof(Login), new { returnUrl = model.returnUrl});
             }
             else
             {
+                //envoi sur la page register avec les infos saisies, si problème
                 model.Error = rst;
                 return View(model);
             } 
         }
+
+        /// <summary>
+        /// affichage de la page login
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Login(string returnUrl)
         {
@@ -66,9 +89,15 @@ namespace PollFiction.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// traitemant des infos pour un connexion au site
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            //on verifie les info de connection
             bool login = await _userService.ConnectUserAsync(model.Pseudo, model.Password, model.RememberMe);
 
             if (login)
@@ -76,20 +105,27 @@ namespace PollFiction.Web.Controllers
                 model.Error = "";
                 if (!string.IsNullOrEmpty(model.ReturnUrl))
                 {
+                    //si connection OK on redirige vers la page demandé au départ
                     return Redirect(model.ReturnUrl);
                 }
                 else
                 {
-                    return RedirectToAction(nameof(Dashboard), "Poll");
+                    // si connection Ok mais pas de page demandé au départ
+                    return RedirectToAction("Dashboard", "Poll");
                 }
             }
             else
             {
+                //erreur dasn les infos de log
                 model.Error = "Login ou mot de passe incorrect !";
                 return View(model);
             }
         }
 
+        /// <summary>
+        /// Fonction pour la deconnection du site
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Logout()
         {
             await _userService.DisconnectAsync();
@@ -97,24 +133,28 @@ namespace PollFiction.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize]
-        public IActionResult Dashboard()
-        {
-            var model = _pollService.LoadDashboardAsync();
 
-            return View(model);
-        }
+        /// <summary>
+        /// affichage du Dashboard, uniquement pour les gens autorisés
+        /// </summary>
+        /// <returns></returns>
+        //[Authorize]
+        //public IActionResult Dashboard()
+        //{
+        //    var model = _pollService.LoadDashboardAsync();
 
-        [Authorize]
-        public IActionResult CreatePoll()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        //    return View(model);
+        //}
+        
+        /// <summary>
+        /// Affichage de la page création de sondage (autorisation requise)
+        /// </summary>
+        /// <returns></returns>
+        //[Authorize]
+        //public IActionResult CreatePoll()
+        //{
+        //    return View();
+        //}
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

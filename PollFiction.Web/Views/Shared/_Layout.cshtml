@@ -12,6 +12,7 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 @{
+                    //changement du lien en fonction de si la personne est loggé ou non
                     if(User.Claims.FirstOrDefault(u => u.Type.Equals("name")) != null)
                     {
                         <a class="navbar-brand" asp-area="" asp-controller="Poll" asp-action="Dashboard">PollFiction</a>
@@ -35,6 +36,7 @@
 
                     <div>
                         @{
+                            //test si loggé
                             if(User.Claims.FirstOrDefault(u => u.Type.Equals("name")) != null)
                             {
                                 
@@ -48,6 +50,7 @@
 
                     @if(User.Claims.FirstOrDefault(u => u.Type.Equals("name")) != null)
                     {
+                        //test si loggé
                         <div class="deco-lien">
                             <a class="index-a" asp-area="" asp-controller="Home" asp-action="Logout">
                                 <span class="deco-black">@User.Claims.FirstOrDefault(u => u.Type.Equals("name")).Value - </span>

@@ -27,5 +27,7 @@ namespace PollFiction.Services.Interfaces
         Task DisablePollAsync(Poll poll);
 
         Task<StatViewModel> StatOfPollAsync(string code);
+
+        void SendMail(string poll, string mail);
     }
 }

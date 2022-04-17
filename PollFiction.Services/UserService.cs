@@ -43,6 +43,7 @@ namespace PollFiction.Services
         #region ConnectUserAsync
         public async Task<bool> ConnectUserAsync(string pseudo, string password, bool rememberMe)
         {
+            //cryptage
             byte[] pwd = Encoding.UTF8.GetBytes(password);
             byte[] hash = SHA512.HashData(pwd);
 
@@ -85,7 +86,7 @@ namespace PollFiction.Services
         public async Task<string> RegisterUserAsync(RegisterViewModel user)
         {
             //Expression régulière de verification du mail et du mot de passe
-            Regex regexMail = new Regex(@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
+            Regex regexMail = new Regex(@"^([\w\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
             Regex regexPwd = new Regex(@"^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$");
 
             if (!regexMail.IsMatch(user.Mail))

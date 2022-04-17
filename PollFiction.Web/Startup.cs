@@ -39,6 +39,7 @@ namespace PollFiction.Web
                 ;
             });
 
+            //parametres du cookie
             services.AddAuthentication("Cookies")
                .AddCookie("Cookies", options =>
                {
@@ -53,6 +54,7 @@ namespace PollFiction.Web
                    options.Cookie.IsEssential = true;
                });
 
+            //appel des services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPollService, PollService>();
 
