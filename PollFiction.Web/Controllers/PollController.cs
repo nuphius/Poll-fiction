@@ -172,6 +172,13 @@ namespace PollFiction.Web.Controllers
         [Authorize, HttpPost]
         public async Task<IActionResult> Vote(VotePollViewModel model)
         {
+            //teste si la personne a bien voté
+            if (model.ChoiceId ==0 && model.CheckChoice == null)
+            {
+                if(TempData.ContainsKey("code"))
+                    return RedirectToAction(nameof(Vote), new { code = TempData["code"].ToString() });
+            }
+
             //récupération d'information complémentaire depuis la view
             if (TempData.ContainsKey("poll"))
                 model.PollId = Convert.ToInt32(TempData["poll"]);
