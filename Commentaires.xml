@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PollFiction.Web</name>
+    </assembly>
+    <members>
+        <member name="M:PollFiction.Web.Controllers.HomeController.Index">
+            <summary>
+            affichage page index
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.HomeController.Register(System.String)">
+            <summary>
+            Affichage de la page register avec memorisation de l'url non autorisé
+            </summary>
+            <param name="returnUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.HomeController.Register(PollFiction.Services.Models.RegisterViewModel)">
+            <summary>
+            traitement des données de la page register
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.HomeController.Login(System.String)">
+            <summary>
+            affichage de la page login
+            </summary>
+            <param name="returnUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.HomeController.Login(PollFiction.Web.Models.LoginViewModel)">
+            <summary>
+            traitemant des infos pour un connexion au site
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.HomeController.Logout">
+            <summary>
+            Fonction pour la deconnection du site
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.HomeController.Error">
+            <summary>
+            Affichage de la page création de sondage (autorisation requise)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.PollController.#ctor(Microsoft.Extensions.Logging.ILogger{PollFiction.Web.Controllers.HomeController},PollFiction.Services.Interfaces.IUserService,PollFiction.Services.Interfaces.IPollService)">
+            <summary>
+            injection des services
+            </summary>
+            <param name="logger"></param>
+            <param name="userService"></param>
+            <param name="pollService"></param>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.PollController.Dashboard(System.String)">
+            <summary>
+            Affichage du tableau de bord
+            </summary>
+            <param name="error"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.PollController.CreatePoll">
+            <summary>
+            Affichage de la page création de sondage
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.PollController.CreatePoll(PollFiction.Services.Models.CreatePollViewModel)">
+            <summary>
+            Traitement des infos saisies pour la création du sondage
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.PollController.LinksPoll(System.Int32)">
+            <summary>
+            Affichage de la page avec les 3 liens et controle de l'accès depuis le Dashboard
+            </summary>
+            <param name="pollId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.PollController.LinksPoll(PollFiction.Services.Models.LinksPollViewModel)">
+            <summary>
+            Sauvegarde des mails invitation
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.PollController.Vote(System.String)">
+            <summary>
+            Gestion des l'acces aux pages de vote ou des stat en fonction des autorisations et du code envoyé
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PollFiction.Web.Controllers.PollController.Vote(PollFiction.Services.Models.VotePollViewModel)">
+            <summary>
+            enregistrement des votes
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -180,6 +180,15 @@ h1{
     height:30px;
     width:auto;
 }
+
+.li-vote {
+    margin-bottom:5px;
+}
+
+.li-vote div{
+    border-radius:10px;
+    padding:8px;
+}
 /* Fin CSS personnalisé de PollFiction !!!!!!*/
 a.navbar-brand {
     white-space: normal;

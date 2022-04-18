@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <DocumentationFile>C:\Users\mikae\source\repos\PollFiction\PollFiction.Web\Commentaires.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

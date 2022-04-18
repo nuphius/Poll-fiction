@@ -138,6 +138,9 @@ namespace PollFiction.Services
         #region SaveGuestPollAsync
         public async Task SaveGuestPollAsync(LinksPollViewModel mailGuest)
         {
+            //récupère le code de participation du poll
+            string linkPoll = _ctx.Polls.Where(x => x.PollId.Equals(mailGuest.PollId)).Select(y => y.PollLinkAccess).FirstOrDefault();
+
             //récupère tous les Guest existant
             List<Guest> guests = _ctx.Guests.Select(x => new Guest
             {
@@ -151,10 +154,8 @@ namespace PollFiction.Services
             {
                 mailGuest.GuestMails.Add(_user.UserMail);
 
-                // List<PollGuest> pollGuests = new List<PollGuest>();
-
                 foreach (var mail in mailGuest.GuestMails)
-                {   
+                {
                     //verifier si se mail est déja existant dans la table des Guest
                     issetMailInBdd = guests.Where(x => x.GuestMail.Equals(mail)).FirstOrDefault();
 
@@ -170,18 +171,24 @@ namespace PollFiction.Services
                             }
                         });
 
-                        string linkPoll = _ctx.Polls.Where(x => x.PollId.Equals(mailGuest.PollId)).Select(y => y.PollLinkAccess).FirstOrDefault();
-
                         //envoi des mails d'invitation
                         SendMail(linkPoll, mail);
                     }
                     else
                     {
-                        await _ctx.AddAsync(new PollGuest
+                        var invitations = _ctx.PollGuests.Select(x => new Tuple<int, int>(x.GuestId, x.PollId)).ToList();
+
+                        if (!invitations.Contains(new Tuple<int, int>(issetMailInBdd.GuestId, mailGuest.PollId)))
                         {
-                            PollId = mailGuest.PollId,
-                            GuestId = issetMailInBdd.GuestId
-                        });
+                            await _ctx.AddAsync(new PollGuest
+                            {
+                                PollId = mailGuest.PollId,
+                                GuestId = issetMailInBdd.GuestId
+                            });
+
+                            //envoi des mails d'invitation
+                            SendMail(linkPoll, mail);
+                        }
                     }
                 }
                 await _ctx.SaveChangesAsync();
@@ -470,11 +477,11 @@ namespace PollFiction.Services
         public void SendMail(string linkPoll, string mail)
         {
 
-            string to = mail; //To address    
+            string to = "mikael@evhr.net"; //To address    
             string from = "alsc-adaitp21-bmi@ccicampus.fr"; //From address    
             MailMessage message = new MailMessage(from, to);
 
-            string mailbody = "Merci de participer au sondage bande de noob !!!!!\n lien du sondage :" +
+            string mailbody = "Merci de participer au sondage \n lien du sondage :" +
                 "<a href=\"https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + linkPoll + "\" title=\"Aller au sonadge\"/> " +
                 "https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + linkPoll + " </a> " +
                 "<p>Pour accéder au sondage vous devez avoir un compte créé avec le mail : " + mail + "</p>";
@@ -496,7 +503,7 @@ namespace PollFiction.Services
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                
+
             }
         }
         #endregion
