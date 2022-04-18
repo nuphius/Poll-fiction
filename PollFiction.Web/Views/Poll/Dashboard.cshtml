@@ -70,7 +70,7 @@
                                 </span>
                             }
 
-                            <a href="/Poll/Vote?code=@poll.PollCreator.PollLinkStat" title="Visualiser les résultats">
+                            <a href="/Poll/Stats?code=@poll.PollCreator.PollLinkStat" title="Visualiser les résultats">
                                 <img src="~/images/combine48.png" alt="Visualiser les résultats" class="img-list-poll-dashbord">
                             </a>
                         </div>
@@ -114,7 +114,7 @@
                                     </a> 
                             }
 
-                            <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkStat" title="Visualiser les résultats">
+                            <a href="/Poll/Stats?code=@poll.PollGuest.PollLinkStat" title="Visualiser les résultats">
                                 <img src="~/images/combine48.png" alt="Visualiser les résultats" class="img-list-poll-dashbord">
                             </a>
                         </div>
@@ -124,8 +124,8 @@
         }
     </div>
 
-    <div class="container-form">
-        <h4>Vos invitations aux sondages</h4>
+@*    <div class="container-form">
+        <h4>Vos invitations aux sondages</h4>*
         
         @{
             foreach(var poll in Model.listPollViewModels)
@@ -159,7 +159,7 @@
                                     </a> 
                             }
 
-                            <a href="/Poll/Vote?code=@poll.PollGuest.PollLinkStat" title="Visualiser les résultats">
+                            <a href="/Poll/Stats?code=@poll.PollGuest.PollLinkStat" title="Visualiser les résultats">
                                 <img src="~/images/combine48.png" alt="Visualiser les résultats" class="img-list-poll-dashbord">
                             </a>
                         </div>
@@ -167,7 +167,7 @@
                 }
             }
         }
-    </div>
+    </div>*@
 </div>
 @section Scripts {
     <script>

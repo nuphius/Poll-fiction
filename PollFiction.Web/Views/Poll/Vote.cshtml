@@ -39,7 +39,7 @@
 
                     if (!Model.Poll.PollMultiple)
                     {
-                        <input type="radio" name="ChoiceId" value="@choice.ChoiceId" id="choice.ChoiceId" @check/>
+                        <input type="radio" name="ChoiceId" value="@choice.ChoiceId" id="@choice.ChoiceId" @check/>
                         <span>
                             <label for="@choice.ChoiceId" > @choice.ChoiceText</label>
                         </span>

@@ -102,31 +102,50 @@ namespace PollFiction.Services
         /// <param name="poll"></param>
         /// <returns></returns>
         #region SaveCreatePollAsync
-        public async Task<Poll> SaveCreatePollAsync(CreatePollViewModel poll)
+        public async Task<LinksPollViewModel> SaveCreatePollAsync(CreatePollViewModel poll)
         {
-            var mail = _ctx.Users.Where(u => u.UserId.Equals(_userId)).Select(s => s.UserMail);
+            //var mail = _ctx.Users.Where(u => u.UserId.Equals(_userId)).Select(s => s.UserMail);
 
-            Poll pollDb = new Poll
+            if (!string.IsNullOrEmpty(poll.Titre) && !string.IsNullOrEmpty(poll.Description) && poll.Choices.Count > 1)
             {
-                PollTitle = poll.Titre,
-                Polldate = DateTime.Now,
-                PollMultiple = poll.Multiple,
-                UserId = _userId,
-                PollDescription = poll.Description,
-                PollDisable = false,
-                PollLinkAccess = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
-                PollLinkDisable = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
-                PollLinkStat = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
-                Choices = poll.Choices.Select(c => new Choice
+                Poll pollDb = new Poll
                 {
-                    ChoiceText = c
-                }).ToList()
-            };
+                    PollTitle = poll.Titre,
+                    Polldate = DateTime.Now,
+                    PollMultiple = poll.Multiple,
+                    UserId = _userId,
+                    PollDescription = poll.Description,
+                    PollDisable = false,
+                    PollLinkAccess = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
+                    PollLinkDisable = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
+                    PollLinkStat = Guid.NewGuid().ToString().Replace("-", "").ToUpper(),
+                    Choices = poll.Choices.Select(c => new Choice
+                    {
+                        ChoiceText = c
+                    }).ToList()
+                };
 
-            //ajout et sauvegarde dans la BDD du poll crée ci-dessus
-            await _ctx.AddAsync(pollDb);
-            await _ctx.SaveChangesAsync();
-            return pollDb;
+                //ajout et sauvegarde dans la BDD du poll crée ci-dessus
+                await _ctx.AddAsync(pollDb);
+                await _ctx.SaveChangesAsync();
+
+
+                //création un VewModel pour les 3 liens à afficher
+                LinksPollViewModel links = new LinksPollViewModel
+                {
+                    LinkDelete = "https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + pollDb.PollLinkDisable,
+                    LinkPoll = "https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + pollDb.PollLinkAccess,
+                    LinkStat = "https://" + _httpContext.Request.Host.Value + "/Poll/Stats?code=" + pollDb.PollLinkStat,
+                    PollId = pollDb.PollId
+                };
+
+                //envoi vers la vue de suite après la création du sondage
+                return links;
+            }
+            else
+            {
+                return null;
+            }
         }
         #endregion
 
@@ -204,6 +223,7 @@ namespace PollFiction.Services
         #region SearchPollByCodeAsync
         public async Task<(Poll, string, int)> SearchPollByCodeAsync(string code)
         {
+            code = code.Trim();
             //on récupere le Poll qui correspond au code ainsi que toutes les infos des tables liaisons
             Poll poll = await _ctx.Polls
                                 .Include(p => p.Choices)
@@ -386,9 +406,9 @@ namespace PollFiction.Services
                                                .Where(p => p.PollId == pollid && p.UserId.Equals(_userId))
                                                .Select(p => new LinksPollViewModel
                                                {
-                                                   LinkDelete = "https://" + _httpContext.Request.Host.Value + @"/Poll/Vote?code=" + p.PollLinkDisable,
-                                                   LinkPoll = "https://" + _httpContext.Request.Host.Value + @"/Poll/Vote?code=" + p.PollLinkAccess,
-                                                   LinkStat = "https://" + _httpContext.Request.Host.Value + @"/Poll/Vote?code=" + p.PollLinkStat,
+                                                   LinkDelete = "https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + p.PollLinkDisable,
+                                                   LinkPoll = "https://" + _httpContext.Request.Host.Value + "/Poll/Vote?code=" + p.PollLinkAccess,
+                                                   LinkStat = "https://" + _httpContext.Request.Host.Value + "/Poll/Stats?code=" + p.PollLinkStat,
                                                    PollId = pollid
                                                }).FirstOrDefaultAsync();
             return linksPoll;
@@ -477,7 +497,7 @@ namespace PollFiction.Services
         public void SendMail(string linkPoll, string mail)
         {
 
-            string to = "mikael@evhr.net"; //To address    
+            string to = mail; //To address    
             string from = "alsc-adaitp21-bmi@ccicampus.fr"; //From address    
             MailMessage message = new MailMessage(from, to);
 

@@ -12,7 +12,7 @@ namespace PollFiction.Services.Interfaces
     {
         Task<DashboardViewModel> LoadDashboardAsync();
 
-        Task<Poll> SaveCreatePollAsync(CreatePollViewModel poll);
+        Task<LinksPollViewModel> SaveCreatePollAsync(CreatePollViewModel poll);
 
         Task SaveGuestPollAsync(LinksPollViewModel mailGuest);
 

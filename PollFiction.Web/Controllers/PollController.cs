@@ -69,19 +69,10 @@ namespace PollFiction.Web.Controllers
         public async Task<IActionResult> CreatePoll(CreatePollViewModel model)
         {
             //envoi des infos du sondage pour traiment et enregistement puis on les récupèrent
-            Poll rst = await _pollService.SaveCreatePollAsync(model);
+            LinksPollViewModel links = await _pollService.SaveCreatePollAsync(model);
 
-            if (rst != null)
+            if (links != null)
             {
-                //si la création est OK on crée un VewModel pour les 3 liens à afficher
-                LinksPollViewModel links = new LinksPollViewModel
-                {
-                    LinkDelete = "https://"+ Request.Host.Value + @"/Poll/Vote?code="+rst.PollLinkDisable,
-                    LinkPoll = "https://" + Request.Host.Value + @"/Poll/Vote?code=" + rst.PollLinkAccess,
-                    LinkStat = "https://" + Request.Host.Value + @"/Poll/Vote?code=" + rst.PollLinkStat,
-                    PollId = rst.PollId                   
-                };
-
                 //envoi vers la vue de suite après la création du sondage
                 return View("LinksPoll",links);
             }
@@ -187,13 +178,18 @@ namespace PollFiction.Web.Controllers
 
             var link = await _pollService.SaveChoiceVoteAsync(model);
 
-            return RedirectToAction(nameof(Stats), new { codeStat = link} );
+            return RedirectToAction(nameof(Stats), new { code = link} );
         }
 
         //page stats
-        public async Task<IActionResult> Stats(string codeStat)
+        public async Task<IActionResult> Stats(string code)
         {
-            StatViewModel model = await _pollService.StatOfPollAsync(codeStat);
+            StatViewModel model = await _pollService.StatOfPollAsync(code);
+
+            if (model == null)
+            {
+                return RedirectToAction(nameof(Vote), new { code = code });
+            }
 
             return View(model);
         }
