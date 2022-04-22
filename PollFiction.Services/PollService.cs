@@ -511,7 +511,7 @@ namespace PollFiction.Services
             message.IsBodyHtml = true;
             SmtpClient client = new SmtpClient("smtp.office365.com", 587); //Gmail smtp    
             System.Net.NetworkCredential basicCredential1 = new
-            System.Net.NetworkCredential("alsc-adaitp21-bmi@ccicampus.fr", "Irzv4885");
+            System.Net.NetworkCredential("alsc-adaitp21-bmi@ccicampus.fr", "PASSWORDDDDDDD");
             client.EnableSsl = true;
             client.UseDefaultCredentials = false;
             client.Credentials = basicCredential1;
